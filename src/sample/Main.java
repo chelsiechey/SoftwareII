@@ -5,7 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utils.DBConnection;
 
+import java.sql.SQLException;
+
+/** This class creates an App for scheduling appointments */
 public class Main extends Application {
 
     @Override
@@ -16,8 +20,10 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-
+    /** The main method for the application. This is the first method to be called when the Java program is run. */
     public static void main(String[] args) {
+        DBConnection.establishConnection();
         launch(args);
+        DBConnection.closeConnection();
     }
 }
