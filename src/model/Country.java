@@ -1,20 +1,31 @@
 package model;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Country {
-    private int id;
-    private String name;
+    private int countryId;
+    private String country;
 
     // constructor
-    public Country(int id, String name) {
-        this.id = id;
-        this.name = name;
+    public Country(int countryId, String country) {
+        setCountryId(countryId);
+        setCountry(country);
     }
 
     // getters
-    public int getId() {
-        return id;
+    public int getCountryId() {
+        return countryId;
     }
-    public String getName() {
-        return name;
+    public String getCountry() {
+        return country;
+    }
+
+    // setters
+    public void setCountryId(int countryId) {
+        this.countryId = countryId;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

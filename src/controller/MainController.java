@@ -2,24 +2,37 @@ package controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.fxml.FXML;
 import utils.DBConnection;
+
+import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.ZoneId;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import model.User;
-import javafx.scene.control.Alert;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+
 
 public class MainController implements Initializable {
+    private Stage stage;
+    private Parent scene;
+    private ZoneId zoneId = ZoneId.systemDefault();
+    @FXML
+    private Label LogInLabel;
+    @FXML
+    private Label ZoneIdLabelLogin;
+
     @FXML
     private Label UsernameLabelLogin;
 
@@ -33,7 +46,10 @@ public class MainController implements Initializable {
     private PasswordField PasswordFieldLogin;
 
     @FXML
-    void SubmitLogin(ActionEvent event) {
+    private Button SubmitButtonLogin;
+
+    @FXML
+    void SubmitLogin(ActionEvent event) throws IOException {
         Parent root;
         Stage stage;
         String usernameInput = UsernameTextFieldLogin.getText();
@@ -41,6 +57,12 @@ public class MainController implements Initializable {
         int userId = getUserId(usernameInput);
         if (correctPassword(userId, passwordInput)) {
             User user = new User(userId, usernameInput, passwordInput);
+            Stage userViewStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
+            scene.getStylesheets().add("./stylesheet.css");
+            userViewStage.setTitle("User View");
+            userViewStage.setScene(new Scene(scene));
+            userViewStage.show();
         } else {
             System.out.println("Invalid password.");
         }
@@ -81,9 +103,15 @@ public class MainController implements Initializable {
     /** Initializes the MainController */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         try {
-            // TODO
-            System.out.println("Resources initialized");
+            resourceBundle = ResourceBundle.getBundle("languages.login", Locale.getDefault());
+            UsernameLabelLogin.setText(resourceBundle.getString("username"));
+            PasswordLabelLogin.setText(resourceBundle.getString("password"));
+            LogInLabel.setText(resourceBundle.getString("logIn"));
+            SubmitButtonLogin.setText(resourceBundle.getString("submit"));
+            ZoneIdLabelLogin.setText(zoneId.toString());
+            System.out.println("Resources initialized.");
         } catch (MissingResourceException e) {
             System.out.println("Resource not found.");
         }

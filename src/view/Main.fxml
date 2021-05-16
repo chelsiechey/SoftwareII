@@ -10,34 +10,23 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
 <GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <children>
       <VBox alignment="CENTER" prefHeight="500.0" prefWidth="800.0">
          <children>
-            <Label text="Log In">
-               <font>
-                  <Font name="Times New Roman" size="33.0" />
-               </font>
-            </Label>
+            <Label fx:id="LogInLabel" text="Log In" />
             <HBox alignment="CENTER" prefHeight="46.0" prefWidth="800.0">
                <children>
                   <Label fx:id="UsernameLabelLogin" text="Username">
                      <padding>
                         <Insets right="20.0" />
                      </padding>
-                     <font>
-                        <Font name="Times New Roman" size="18.0" />
-                     </font>
                   </Label>
                   <TextField fx:id="UsernameTextFieldLogin">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
-                     <font>
-                        <Font name="Times New Roman" size="18.0" />
-                     </font>
                   </TextField>
                </children>
                <VBox.margin>
@@ -50,15 +39,8 @@
                      <padding>
                         <Insets right="20.0" />
                      </padding>
-                     <font>
-                        <Font name="Times New Roman" size="18.0" />
-                     </font>
                   </Label>
-                  <PasswordField fx:id="PasswordFieldLogin">
-                     <font>
-                        <Font name="Times New Roman" size="18.0" />
-                     </font>
-                  </PasswordField>
+                  <PasswordField fx:id="PasswordFieldLogin" />
                </children>
                <VBox.margin>
                   <Insets />
@@ -67,14 +49,16 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </HBox>
-            <Button mnemonicParsing="false" onAction="#SubmitLogin" text="Submit">
-               <font>
-                  <Font name="Times New Roman" size="14.0" />
-               </font>
+            <Button fx:id="SubmitButtonLogin" mnemonicParsing="false" onAction="#SubmitLogin" text="Submit">
                <VBox.margin>
-                  <Insets top="10.0" />
+                  <Insets bottom="30.0" top="10.0" />
                </VBox.margin>
             </Button>
+            <Label fx:id="ZoneIdLabelLogin" alignment="CENTER" text="ZoneID">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Label>
          </children>
       </VBox>
    </children>
