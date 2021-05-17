@@ -1,28 +1,29 @@
 package controller;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import model.Customer;
-import utils.DBConnection;
-import java.util.Optional;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+
 import java.io.IOException;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import java.util.Optional;
 import java.util.ResourceBundle;
-import java.net.URL;
-import model.User;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.*;
 
-public class ModifyCustomerController implements Initializable {
+import javafx.fxml.Initializable;
+import model.User;
+import utils.DBConnection;
+
+public class AddCustomerController implements Initializable {
     private Stage stage;
     private Parent scene;
     @FXML
@@ -43,19 +44,11 @@ public class ModifyCustomerController implements Initializable {
     ObservableList<String> countryOptionsList = FXCollections.observableArrayList();
     ObservableList<String> stateOptionsList = FXCollections.observableArrayList();
 
-
-
-    public void getCustomerToModify(Customer customerToModify) {
-        System.out.println("Reached getCustomerToModify");
-        System.out.println(customerToModify.getCustomerId());
-        customerIdTextField.setText(String.valueOf(customerToModify.getCustomerId()));
-        customerNameTextField.setText(customerToModify.getCustomerName());
-        addressTextField.setText(String.format(customerToModify.getAddress()));
-        postalCodeTextField.setText(String.valueOf(customerToModify.getPostalCode()));
-        phoneTextField.setText(String.valueOf(customerToModify.getPhone()));
-        countryComboBox.getSelectionModel().select(String.valueOf(customerToModify.getCountry()));
-        stateComboBox.getSelectionModel().select(String.valueOf(customerToModify.getState()));
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        countryOptions();
     }
+
     public void countryOptions() {
         try {
             String sql = "SELECT country FROM countries";
@@ -70,10 +63,6 @@ public class ModifyCustomerController implements Initializable {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        countryOptions();
     }
 
     public void initializeStates(String country) {
@@ -125,7 +114,6 @@ public class ModifyCustomerController implements Initializable {
         String country = countryComboBox.getValue();
         initializeStates(country);
     }
-
     public void handleCancel(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         DialogPane dialogPane = alert.getDialogPane();
@@ -143,9 +131,7 @@ public class ModifyCustomerController implements Initializable {
         }
     }
 
-    public void saveCustomer(ActionEvent actionEvent) {
-        int customerId = Integer.parseInt(customerIdTextField.getText());
-        System.out.println(customerId);
+    public void createCustomer(ActionEvent actionEvent) {
         String customerName = customerNameTextField.getText();
         System.out.println(customerName);
         String address = addressTextField.getText();
@@ -156,27 +142,18 @@ public class ModifyCustomerController implements Initializable {
         System.out.println(phoneTextField);
         String state = stateComboBox.getValue();
         String username = User.getUsername();
-        System.out.println(state);
-        System.out.println("Reached 1");
         try {
-            System.out.println("Reached 2");
             String sql = "SELECT Division_ID FROM first_level_divisions WHERE Division='" + state + "'";
-            System.out.println("Reached 3");
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            System.out.println("Reached 4");
             ResultSet rs = ps.executeQuery();
-            System.out.println("Reached 5");
             System.out.println(rs);
             while (rs.next()) {
                 try {
-                    System.out.println("Reached 6");
                     int divisionId = (rs.getInt("Division_ID"));
-                    System.out.println("Reached 7");
-                    String sqlToUpdate = "UPDATE customers SET Customer_Name='" + customerName + "', Address='" + address + "', Postal_Code='" + postalCode + "', Phone='" + phone + "', Division_ID=" + divisionId + ", Last_Update=CURRENT_TIMESTAMP, Last_Updated_By='" + username + "' WHERE Customer_ID=" + customerId;
-                    System.out.println("Reached 8");
+                    String sqlToUpdate = "INSERT INTO customers (Customer_Name, Address, Postal_Code, Phone, Create_Date, Created_By, Last_Update, Last_Updated_By, Division_ID) " +
+                            "VALUES ('" + customerName + "', '" + address + "', '" + postalCode + "', '" + phone + "', CURRENT_TIMESTAMP, '" + username + "', CURRENT_TIMESTAMP, '" + username + "', " + divisionId + ")" ;
                     PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sqlToUpdate);
                     preparedStatement.executeUpdate();
-                    System.out.println("Reached 9");
                 } catch (SQLException throwables) {
                     System.out.println("Reached catch");
                     throwables.printStackTrace();
@@ -192,4 +169,6 @@ public class ModifyCustomerController implements Initializable {
             throwables.printStackTrace();
         }
     }
+
+
 }

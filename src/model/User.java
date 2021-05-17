@@ -2,8 +2,8 @@ package model;
 import java.sql.Timestamp;
 
 public class User {
-    private int userId;
-    private String username;
+    private static int userId;
+    private static String username;
     private String password;
     private Timestamp createDate;
     private String createdBy;
@@ -18,10 +18,10 @@ public class User {
     }
 
     // getters
-    public int getUserId() {
+    public static int getUserId() {
         return userId;
     }
-    public String getUsername() {
+    public static String getUsername() {
         return username;
     }
     public String getPassword() {

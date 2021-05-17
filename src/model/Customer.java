@@ -1,6 +1,7 @@
 package model;
-import java.sql.Date;
-import java.sql.Timestamp;
+import utils.DBConnection;
+
+import java.sql.*;
 
 public class Customer {
     private int customerId;
@@ -14,6 +15,7 @@ public class Customer {
     private String lastUpdatedBy;
     private int divisionId;
     private String country;
+    private String state;
 
     // constructors
     public Customer() {
@@ -26,6 +28,8 @@ public class Customer {
         setPostalCode(postalCode);
         setPhone(phone);
         setDivisionId(divisionId);
+        setCountry(divisionId);
+        setState(divisionId);
     }
 
 //    public Customer(int customerId, String customerName) {
@@ -63,6 +67,9 @@ public class Customer {
     public String getCountry() {
         return country;
     }
+    public String getState() {
+        return state;
+    }
     // setters
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
@@ -88,7 +95,36 @@ public class Customer {
     public void setDivisionId(int divisionId) {
         this.divisionId = divisionId;
     }
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountry(int divisionId) {
+        try {
+            String sql = "SELECT COUNTRY_ID FROM first_level_divisions WHERE Division_ID=" + divisionId;
+            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                if (rs.getInt("COUNTRY_ID") == 1) {
+                    this.country = "U.S";
+                }
+                else if (rs.getInt("COUNTRY_ID") == 2) {
+                    this.country = "UK";
+                }
+                else if (rs.getInt("COUNTRY_ID") == 3) {
+                    this.country = "Canada";
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+    public void setState(int divisionId) {
+        try {
+            String sql = "SELECT Division FROM first_level_divisions WHERE Division_ID=" + divisionId;
+            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                this.state = rs.getString("Division");
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }

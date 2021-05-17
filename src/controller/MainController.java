@@ -60,12 +60,12 @@ public class MainController implements Initializable {
         int userId = getUserId(usernameInput);
         if (correctPassword(userId, passwordInput)) {
             User user = new User(userId, usernameInput, passwordInput);
-            Stage userViewStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+            Stage customerViewStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
             scene.getStylesheets().add("./stylesheet.css");
-            userViewStage.setTitle("User View");
-            userViewStage.setScene(new Scene(scene));
-            userViewStage.show();
+            customerViewStage.setTitle("Customer View");
+            customerViewStage.setScene(new Scene(scene));
+            customerViewStage.show();
         } else {
             try {
                 ResourceBundle resourceBundle = ResourceBundle.getBundle("languages.login", Locale.getDefault());
