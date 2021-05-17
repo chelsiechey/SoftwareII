@@ -8,13 +8,17 @@ public class Customer {
     private String address;
     private String postalCode;
     private String phone;
-    private Date createDate;
+    private Timestamp createDate;
     private String createdBy;
     private Timestamp lastUpdate;
     private String lastUpdatedBy;
     private int divisionId;
+    private String country;
 
     // constructors
+    public Customer() {
+
+    }
     public Customer(int customerId, String customerName, String address, String postalCode, String phone, int divisionId) {
         setCustomerId(customerId);
         setCustomerName(customerName);
@@ -56,6 +60,9 @@ public class Customer {
     public int getDivisionId() {
         return divisionId;
     }
+    public String getCountry() {
+        return country;
+    }
     // setters
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
@@ -72,13 +79,16 @@ public class Customer {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
-    public void setLastUpdate(Timestamp lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-    public void setLastUpdatedBy(String lastUpdatedBy) {
-        this.lastUpdatedBy = lastUpdatedBy;
-    }
+//    public void setLastUpdate(Timestamp lastUpdate) {
+//        this.lastUpdate = lastUpdate;
+//    }
+//    public void setLastUpdatedBy(String lastUpdatedBy) {
+//        this.lastUpdatedBy = lastUpdatedBy;
+//    }
     public void setDivisionId(int divisionId) {
         this.divisionId = divisionId;
+    }
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

@@ -54,6 +54,11 @@
                   <Insets bottom="30.0" top="10.0" />
                </VBox.margin>
             </Button>
+            <Label fx:id="InvalidLabelLogin">
+               <VBox.margin>
+                  <Insets bottom="20.0" />
+               </VBox.margin>
+            </Label>
             <Label fx:id="ZoneIdLabelLogin" alignment="CENTER" text="ZoneID">
                <VBox.margin>
                   <Insets />

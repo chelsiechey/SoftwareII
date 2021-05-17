@@ -5,6 +5,10 @@ import java.sql.Timestamp;
 public class Country {
     private int countryId;
     private String country;
+    private Timestamp createDate;
+    private String createdBy;
+    private Timestamp lastUpdate;
+    private String lastUpdatedBy;
 
     // constructor
     public Country(int countryId, String country) {

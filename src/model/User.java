@@ -1,9 +1,14 @@
 package model;
+import java.sql.Timestamp;
 
 public class User {
     private int userId;
     private String username;
     private String password;
+    private Timestamp createDate;
+    private String createdBy;
+    private Timestamp lastUpdate;
+    private String lastUpdatedBy;
 
     // constructor
     public User(int userId, String username, String password) {

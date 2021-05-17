@@ -43,6 +43,9 @@ public class MainController implements Initializable {
     private Label PasswordLabelLogin;
 
     @FXML
+    private Label InvalidLabelLogin;
+
+    @FXML
     private PasswordField PasswordFieldLogin;
 
     @FXML
@@ -64,7 +67,13 @@ public class MainController implements Initializable {
             userViewStage.setScene(new Scene(scene));
             userViewStage.show();
         } else {
-            System.out.println("Invalid password.");
+            try {
+                ResourceBundle resourceBundle = ResourceBundle.getBundle("languages.login", Locale.getDefault());
+                InvalidLabelLogin.setText(resourceBundle.getString("incorrect"));
+                System.out.println("Invalid login attempt.");
+            } catch (MissingResourceException e) {
+                System.out.println("Resource not found.");
+            }
         }
     }
 
