@@ -46,8 +46,6 @@ public class ModifyCustomerController implements Initializable {
 
 
     public void getCustomerToModify(Customer customerToModify) {
-        System.out.println("Reached getCustomerToModify");
-        System.out.println(customerToModify.getCustomerId());
         customerIdTextField.setText(String.valueOf(customerToModify.getCustomerId()));
         customerNameTextField.setText(customerToModify.getCustomerName());
         addressTextField.setText(String.format(customerToModify.getAddress()));

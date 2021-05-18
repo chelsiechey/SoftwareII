@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
+<GridPane alignment="center" hgap="10" prefHeight="652.0" prefWidth="1064.0" vgap="10" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainController">
    <children>
-      <VBox alignment="CENTER" prefHeight="500.0" prefWidth="800.0">
+      <VBox alignment="CENTER" prefHeight="655.0" prefWidth="1064.0">
          <children>
             <Label fx:id="LogInLabel" text="Log In" />
             <HBox alignment="CENTER" prefHeight="46.0" prefWidth="800.0">

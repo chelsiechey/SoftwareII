@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
+<AnchorPane prefHeight="652.0" prefWidth="1064.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
    <children>
-      <TableView fx:id="customerTable" prefHeight="200.0" prefWidth="607.0" onMouseClicked="#getAppointments" >
+      <TableView fx:id="customerTable" onMouseClicked="#getAppointments" prefHeight="200.0" prefWidth="607.0">
         <columns>
           <TableColumn fx:id="customerIdColumn" prefWidth="85.0" text="Customer ID" />
           <TableColumn fx:id="customerNameColumn" prefWidth="105.0" text="Customer Name" />
@@ -26,16 +25,18 @@
             <Button layoutX="50.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete" />
          </children>
       </HBox>
-      <Label fx:id="NoSelectionErrorLabel" layoutY="258.0" prefHeight="17.0" prefWidth="268.0" />
-      <TableView fx:id="appointmentTable" layoutY="258.0" prefHeight="200.0" prefWidth="791.0">
+      <TableView fx:id="appointmentTable" layoutY="258.0" prefHeight="200.0" prefWidth="1058.0">
          <columns>
-            <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
-            <TableColumn fx:id="titleColumn" prefWidth="74.0" text="Title" />
-            <TableColumn fx:id="descriptionColumn" prefWidth="196.0" text="Description" />
-            <TableColumn fx:id="locationColumn" prefWidth="103.0" text="Location" />
-            <TableColumn fx:id="typeColumn" prefWidth="108.0" text="Type" />
-            <TableColumn fx:id="startColumn" prefWidth="108.0" text="Start" />
-            <TableColumn fx:id="endColumn" prefWidth="96.0" text="End" />
+             <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
+             <TableColumn fx:id="titleColumn" prefWidth="74.0" text="Title" />
+             <TableColumn fx:id="descriptionColumn" prefWidth="159.0" text="Description" />
+             <TableColumn fx:id="locationColumn" prefWidth="124.0" text="Location" />
+             <TableColumn fx:id="contactColumn" prefWidth="122.0" text="Contact" />
+             <TableColumn fx:id="typeColumn" prefWidth="118.0" text="Type" />
+             <TableColumn fx:id="startColumn" prefWidth="102.0" text="Start" />
+             <TableColumn fx:id="endColumn" prefWidth="112.0" text="End" />
+             <TableColumn fx:id="appointmentCustomerIdColumn" prefWidth="82.0" text="Customer ID" />
+            <TableColumn fx:id="appointmentUserIdColumn" prefWidth="58.0" text="User ID" />
          </columns>
       </TableView>
       <HBox layoutY="468.0" prefHeight="48.0" prefWidth="607.0">

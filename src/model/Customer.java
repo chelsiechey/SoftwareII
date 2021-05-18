@@ -7,6 +7,7 @@ public class Customer {
     private int customerId;
     private String customerName;
     private String address;
+    private String formattedAddress;
     private String postalCode;
     private String phone;
     private Timestamp createDate;
@@ -95,6 +96,7 @@ public class Customer {
     public void setDivisionId(int divisionId) {
         this.divisionId = divisionId;
     }
+
     public void setCountry(int divisionId) {
         try {
             String sql = "SELECT COUNTRY_ID FROM first_level_divisions WHERE Division_ID=" + divisionId;

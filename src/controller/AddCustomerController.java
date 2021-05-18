@@ -133,13 +133,9 @@ public class AddCustomerController implements Initializable {
 
     public void createCustomer(ActionEvent actionEvent) {
         String customerName = customerNameTextField.getText();
-        System.out.println(customerName);
         String address = addressTextField.getText();
-        System.out.println(address);
         String postalCode = postalCodeTextField.getText();
-        System.out.println(postalCode);
         String phone = phoneTextField.getText();
-        System.out.println(phoneTextField);
         String state = stateComboBox.getValue();
         String username = User.getUsername();
         try {

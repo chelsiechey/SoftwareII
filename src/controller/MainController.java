@@ -7,7 +7,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.fxml.FXML;
 import utils.DBConnection;
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
@@ -25,36 +24,27 @@ import javafx.scene.Scene;
 
 
 public class MainController implements Initializable {
-    private Stage stage;
     private Parent scene;
     private ZoneId zoneId = ZoneId.systemDefault();
     @FXML
     private Label LogInLabel;
     @FXML
     private Label ZoneIdLabelLogin;
-
     @FXML
     private Label UsernameLabelLogin;
-
     @FXML
     private TextField UsernameTextFieldLogin;
-
     @FXML
     private Label PasswordLabelLogin;
-
     @FXML
     private Label InvalidLabelLogin;
-
     @FXML
     private PasswordField PasswordFieldLogin;
-
     @FXML
     private Button SubmitButtonLogin;
 
     @FXML
     void SubmitLogin(ActionEvent event) throws IOException {
-        Parent root;
-        Stage stage;
         String usernameInput = UsernameTextFieldLogin.getText();
         String passwordInput = PasswordFieldLogin.getText();
         int userId = getUserId(usernameInput);
@@ -70,7 +60,6 @@ public class MainController implements Initializable {
             try {
                 ResourceBundle resourceBundle = ResourceBundle.getBundle("languages.login", Locale.getDefault());
                 InvalidLabelLogin.setText(resourceBundle.getString("incorrect"));
-                System.out.println("Invalid login attempt.");
             } catch (MissingResourceException e) {
                 System.out.println("Resource not found.");
             }

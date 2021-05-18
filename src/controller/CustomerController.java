@@ -4,6 +4,9 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.net.URL;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
@@ -16,11 +19,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import utils.DBAppointment;
 import utils.DBConnection;
 import utils.DBCustomers;
+import utils.DBCustomerDivision;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import javafx.scene.Parent;
-
 import java.sql.Timestamp;
 
 public class CustomerController implements Initializable {
@@ -39,8 +42,6 @@ public class CustomerController implements Initializable {
     @FXML
     private TableColumn<Customer, Integer> customerDivisionIdColumn;
     @FXML
-    private Label NoSelectionErrorLabel;
-    @FXML
     private TableView<Appointment> appointmentTable;
     @FXML
     private TableColumn<Appointment, Integer> appointmentIdColumn;
@@ -51,13 +52,44 @@ public class CustomerController implements Initializable {
     @FXML
     private TableColumn<Appointment, String> locationColumn;
     @FXML
+    private TableColumn<Appointment, String> contactColumn;
+    @FXML
     private TableColumn<Appointment, String> typeColumn;
     @FXML
     private TableColumn<Appointment, Timestamp> startColumn;
     @FXML
     private TableColumn<Appointment, Timestamp> endColumn;
     @FXML
-    void addAppointment(ActionEvent event) {
+    private TableColumn<Appointment, Integer> appointmentCustomerIdColumn;
+    @FXML
+    private TableColumn<Appointment, Integer> appointmentUserIdColumn;
+    @FXML
+    void addAppointment(ActionEvent actionEvent) {
+        if (customerTable.getSelectionModel().getSelectedItem() != null) {
+            try {
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/view/AddAppointment.fxml"));
+                loader.load();
+                AddAppointmentController addAppointmentController = loader.getController();
+                addAppointmentController.getSelectedCustomersId(customerTable.getSelectionModel().getSelectedItem());
+                Stage addAppointmentStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                scene = loader.getRoot();
+                addAppointmentStage.setTitle("Add Appointment");
+                addAppointmentStage.setScene(new Scene(scene));
+                scene.getStylesheets().add("stylesheet.css");
+                addAppointmentStage.show();
+            } catch (IOException e) {
+                System.out.println("Resource failed to initialize");
+            }
+        }
+        else {
+            Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
+            DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            noCustomerSelectedAlert.setHeaderText("Please select a customer to schedule an appointment.");
+            noCustomerSelectedAlert.showAndWait();
+        }
     }
     @FXML
     void deleteAppointment(ActionEvent event) {
@@ -72,17 +104,30 @@ public class CustomerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Set up customer table
-        setCustomerTableValues();
-    }
-
-    public void setCustomerTableValues() {
-        customerTable.setItems(DBCustomers.getAllCustomers());
+        ObservableList<Integer> divisionIdList = FXCollections.observableArrayList();
+        DBCustomers.getAllCustomers().forEach((customer) -> {
+            int divisionId = customer.getDivisionId();
+            divisionIdList.add(divisionId);
+        });
+        DBCustomerDivision.getAllCustomerDivisions(divisionIdList);
+//        customerTable.setItems(DBCustomers.getAllCustomers());
         customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
         customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         customerPostalCodeColumn.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
         customerPhoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
         customerDivisionIdColumn.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
+//        setCustomerTableValues();
+    }
+
+    public void setCustomerTableValues() {
+//        customerTable.setItems(DBCustomers.getAllCustomers());
+//        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
+//        customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+//        customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+//        customerPostalCodeColumn.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
+//        customerPhoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
+//        customerDivisionIdColumn.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
     }
 
     public void setAppointmentTableValues() {
@@ -92,9 +137,12 @@ public class CustomerController implements Initializable {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
+        contactColumn.setCellValueFactory(new PropertyValueFactory<>("contactId"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         startColumn.setCellValueFactory(new PropertyValueFactory<>("start"));
         endColumn.setCellValueFactory(new PropertyValueFactory<>("end"));
+        appointmentCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
+        appointmentUserIdColumn.setCellValueFactory(new PropertyValueFactory<>("userId"));
     }
 
     public void getAppointments(MouseEvent actionEvent) throws IOException {
@@ -109,8 +157,6 @@ public class CustomerController implements Initializable {
             loader.load();
             // gets the ModifyCustomerController so the selected customer can be passed
             ModifyCustomerController modifyCustomerController = loader.getController();
-            System.out.println(modifyCustomerController);
-            System.out.println(customerTable.getSelectionModel().getSelectedItem());
             modifyCustomerController.getCustomerToModify(customerTable.getSelectionModel().getSelectedItem());
             Stage modifyCustomerStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
             scene = loader.getRoot();
@@ -119,7 +165,12 @@ public class CustomerController implements Initializable {
             scene.getStylesheets().add("stylesheet.css");
             modifyCustomerStage.show();
         } catch (NullPointerException e) {
-            NoSelectionErrorLabel.setText("Please select a customer to modify.");
+            Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
+            DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            noCustomerSelectedAlert.setHeaderText("Please select a customer to modify.");
+            noCustomerSelectedAlert.showAndWait();
         }
     }
 
@@ -134,8 +185,8 @@ public class CustomerController implements Initializable {
             addCustomerStage.setScene(new Scene(scene));
             scene.getStylesheets().add("stylesheet.css");
             addCustomerStage.show();
-        } catch (NullPointerException | IOException e) {
-            NoSelectionErrorLabel.setText("Please select a customer to modify.");
+        } catch (IOException e) {
+            System.out.println("Resource failed to initialize");
         }
     }
 
@@ -166,7 +217,12 @@ public class CustomerController implements Initializable {
             }
         }
         else {
-            NoSelectionErrorLabel.setText("Please select a customer to delete.");
+            Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
+            DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            noCustomerSelectedAlert.setHeaderText("Please select a customer to delete.");
+            noCustomerSelectedAlert.showAndWait();
         }
     }
 }
