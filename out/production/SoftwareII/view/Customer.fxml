@@ -15,7 +15,7 @@
             <TableColumn fx:id="customerAddressColumn" prefWidth="105.0" text="Address" />
             <TableColumn fx:id="customerPostalCodeColumn" prefWidth="105.0" text="Postal Code" />
             <TableColumn fx:id="customerPhoneColumn" prefWidth="105.0" text="Phone" />
-            <TableColumn fx:id="customerDivisionIdColumn" prefWidth="105.0" text="Division ID" />
+            <TableColumn fx:id="customerDivisionColumn" prefWidth="105.0" text="State/Province" />
         </columns>
       </TableView>
       <HBox layoutY="210.0" prefHeight="48.0" prefWidth="607.0">

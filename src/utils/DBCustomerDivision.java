@@ -1,9 +1,6 @@
 package utils;
 import javafx.collections.*;
 import java.sql.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DBCustomerDivision {
     public static ObservableList<String> getAllCustomerDivisions(ObservableList<Integer> divisionId) {

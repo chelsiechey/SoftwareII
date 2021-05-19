@@ -40,7 +40,7 @@ public class CustomerController implements Initializable {
     @FXML
     private TableColumn<Customer, String> customerPhoneColumn;
     @FXML
-    private TableColumn<Customer, Integer> customerDivisionIdColumn;
+    private TableColumn<Customer, Integer> customerDivisionColumn;
     @FXML
     private TableView<Appointment> appointmentTable;
     @FXML
@@ -103,20 +103,14 @@ public class CustomerController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Set up customer table
-        ObservableList<Integer> divisionIdList = FXCollections.observableArrayList();
-        DBCustomers.getAllCustomers().forEach((customer) -> {
-            int divisionId = customer.getDivisionId();
-            divisionIdList.add(divisionId);
-        });
-        DBCustomerDivision.getAllCustomerDivisions(divisionIdList);
-//        customerTable.setItems(DBCustomers.getAllCustomers());
+        customerTable.setPlaceholder(new Label("No rows to display"));
+        customerTable.setItems(DBCustomers.getAllCustomers());
         customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
         customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
         customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         customerPostalCodeColumn.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
         customerPhoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-        customerDivisionIdColumn.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
+        customerDivisionColumn.setCellValueFactory(new PropertyValueFactory<>("division"));
 //        setCustomerTableValues();
     }
 

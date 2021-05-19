@@ -19,8 +19,18 @@ public class DBCustomers {
                 String postalCode = rs.getString("Postal_Code");
                 String phone = rs.getString("Phone");
                 int divisionId = rs.getInt("Division_ID");
-                Customer customer = new Customer(customerId, customerName, address, postalCode, phone, divisionId);
-                customerList.add(customer);
+                try {
+                    String sqlDivision = "SELECT Division from first_level_divisions WHERE Division_ID=" + divisionId;
+                    PreparedStatement psDivision = DBConnection.getConnection().prepareStatement(sqlDivision);
+                    ResultSet rsDivision = psDivision.executeQuery();
+                    while (rsDivision.next()) {
+                        String division = rsDivision.getString("Division");
+                        Customer customer = new Customer(customerId, customerName, address, postalCode, phone, divisionId, division);
+                        customerList.add(customer);
+                    }
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();

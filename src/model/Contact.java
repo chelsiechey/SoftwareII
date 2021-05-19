@@ -1,7 +1,7 @@
 package model;
 
 public class Contact {
-    private static int contactId;
+    private int contactId;
     private String contactName;
     private String email;
     // constructor
@@ -12,7 +12,7 @@ public class Contact {
     }
 
     // getters
-    public static int getContactId() {
+    public int getContactId() {
         return contactId;
     }
     public String getContactName() {
