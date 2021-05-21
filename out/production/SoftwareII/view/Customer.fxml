@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 
-<AnchorPane prefHeight="652.0" prefWidth="1064.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
+<AnchorPane prefHeight="652.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
    <children>
       <TableView fx:id="customerTable" onMouseClicked="#getAppointments" prefHeight="200.0" prefWidth="607.0">
         <columns>
@@ -25,7 +25,7 @@
             <Button layoutX="50.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete" />
          </children>
       </HBox>
-      <TableView fx:id="appointmentTable" layoutY="258.0" prefHeight="200.0" prefWidth="1058.0">
+      <TableView fx:id="appointmentTable" layoutY="258.0" prefHeight="200.0" prefWidth="1214.0">
          <columns>
              <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
              <TableColumn fx:id="titleColumn" prefWidth="74.0" text="Title" />
@@ -33,10 +33,11 @@
              <TableColumn fx:id="locationColumn" prefWidth="124.0" text="Location" />
              <TableColumn fx:id="contactColumn" prefWidth="122.0" text="Contact" />
              <TableColumn fx:id="typeColumn" prefWidth="118.0" text="Type" />
-             <TableColumn fx:id="startColumn" prefWidth="102.0" text="Start" />
-             <TableColumn fx:id="endColumn" prefWidth="112.0" text="End" />
-             <TableColumn fx:id="appointmentCustomerIdColumn" prefWidth="82.0" text="Customer ID" />
-            <TableColumn fx:id="appointmentUserIdColumn" prefWidth="58.0" text="User ID" />
+            <TableColumn fx:id="dateColumn" prefWidth="118.0" text="Date" />
+             <TableColumn fx:id="startColumn" prefWidth="102.0" text="Start Time" />
+             <TableColumn fx:id="endColumn" prefWidth="112.0" text="End Time" />
+             <TableColumn fx:id="appointmentCustomerIdColumn" prefWidth="100.0" text="Customer ID" />
+            <TableColumn fx:id="appointmentUserIdColumn" prefWidth="81.0" text="User ID" />
          </columns>
       </TableView>
       <HBox layoutY="468.0" prefHeight="48.0" prefWidth="607.0">

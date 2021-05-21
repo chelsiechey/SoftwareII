@@ -143,38 +143,22 @@ public class ModifyCustomerController implements Initializable {
 
     public void saveCustomer(ActionEvent actionEvent) {
         int customerId = Integer.parseInt(customerIdTextField.getText());
-        System.out.println(customerId);
         String customerName = customerNameTextField.getText();
-        System.out.println(customerName);
         String address = addressTextField.getText();
-        System.out.println(address);
         String postalCode = postalCodeTextField.getText();
-        System.out.println(postalCode);
         String phone = phoneTextField.getText();
-        System.out.println(phoneTextField);
         String state = stateComboBox.getValue();
         String username = User.getUsername();
-        System.out.println(state);
-        System.out.println("Reached 1");
         try {
-            System.out.println("Reached 2");
             String sql = "SELECT Division_ID FROM first_level_divisions WHERE Division='" + state + "'";
-            System.out.println("Reached 3");
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            System.out.println("Reached 4");
             ResultSet rs = ps.executeQuery();
-            System.out.println("Reached 5");
-            System.out.println(rs);
             while (rs.next()) {
                 try {
-                    System.out.println("Reached 6");
                     int divisionId = (rs.getInt("Division_ID"));
-                    System.out.println("Reached 7");
                     String sqlToUpdate = "UPDATE customers SET Customer_Name='" + customerName + "', Address='" + address + "', Postal_Code='" + postalCode + "', Phone='" + phone + "', Division_ID=" + divisionId + ", Last_Update=CURRENT_TIMESTAMP, Last_Updated_By='" + username + "' WHERE Customer_ID=" + customerId;
-                    System.out.println("Reached 8");
                     PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sqlToUpdate);
                     preparedStatement.executeUpdate();
-                    System.out.println("Reached 9");
                 } catch (SQLException throwables) {
                     System.out.println("Reached catch");
                     throwables.printStackTrace();

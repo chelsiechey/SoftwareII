@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controller.ModifyAppointmentController"
+            prefHeight="652.0" prefWidth="1300.0">
+            <children>
+                <HBox alignment="CENTER" prefHeight="78.0" prefWidth="800.0">
+                <children>
+                    <VBox prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Appointment ID" />
+                            <TextField fx:id="appointmentIdTextField" disable="true" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Title" />
+                            <TextField fx:id="titleTextField" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="110.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Description" />
+                            <TextField fx:id="descriptionTextField" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="144.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Location" />
+                            <TextField fx:id="locationTextField" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="170.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Contact" />
+                            <ComboBox fx:id="contactComboBox" prefWidth="150.0" />
+                        </children>
+                    </VBox>
+                    <VBox prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Type" />
+                            <TextField fx:id="typeTextField" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="178.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Date" />
+                            <DatePicker fx:id="datePicker" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="178.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="Start Time" />
+                            <ComboBox fx:id="startTimeComboBox" prefWidth="150.0" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="710.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="End Time" />
+                            <ComboBox fx:id="endTimeComboBox" prefWidth="150.0" />
+                        </children>
+                    </VBox>
+                </children>
+            </HBox>
+            <HBox alignment="CENTER" layoutX="294.0" layoutY="78.0" prefHeight="100.0" prefWidth="200.0">
+                <children>
+                    <Button mnemonicParsing="false" onAction="#saveAppointment" text="Save" />
+                    <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCancel" text="Cancel" />
+                </children>
+            </HBox>
+        </children>
+
+
+</AnchorPane>

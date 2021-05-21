@@ -1,6 +1,11 @@
 package controller;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.net.URL;
@@ -16,6 +21,7 @@ import javafx.scene.control.*;
 import model.Customer;
 import model.Appointment;
 import javafx.scene.control.cell.PropertyValueFactory;
+import model.User;
 import utils.DBAppointment;
 import utils.DBConnection;
 import utils.DBCustomers;
@@ -25,6 +31,8 @@ import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import javafx.scene.Parent;
 import java.sql.Timestamp;
+
+
 
 public class CustomerController implements Initializable {
     @FXML
@@ -56,13 +64,18 @@ public class CustomerController implements Initializable {
     @FXML
     private TableColumn<Appointment, String> typeColumn;
     @FXML
-    private TableColumn<Appointment, Timestamp> startColumn;
+    private TableColumn<Appointment, String> startColumn;
     @FXML
-    private TableColumn<Appointment, Timestamp> endColumn;
+    private TableColumn<Appointment, String> endColumn;
+//    @FXML
+//    private TableColumn<Appointment, LocalDate> dateColumn;
     @FXML
     private TableColumn<Appointment, Integer> appointmentCustomerIdColumn;
     @FXML
     private TableColumn<Appointment, Integer> appointmentUserIdColumn;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");//ISO standard time formaat
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-mm-dd");//ISO standard date format
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @FXML
     void addAppointment(ActionEvent actionEvent) {
         if (customerTable.getSelectionModel().getSelectedItem() != null) {
@@ -92,17 +105,69 @@ public class CustomerController implements Initializable {
         }
     }
     @FXML
-    void deleteAppointment(ActionEvent event) {
-
-    }
-    @FXML
-    void modifyAppointment(ActionEvent event) {
-
+    public void deleteAppointment(ActionEvent actionEvent) throws IOException {
+        if (appointmentTable.getSelectionModel().getSelectedItem() != null) {
+            int appointmentId = appointmentTable.getSelectionModel().getSelectedItem().getAppointmentId();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            alert.setHeaderText("Delete appointment?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                try {
+                    String sql = "DELETE FROM appointments WHERE Appointment_ID=" + appointmentId;
+                    PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+                    ps.executeUpdate();
+                    setCustomerTableValues();
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    DialogPane confirmDialogPane = successAlert.getDialogPane();
+                    confirmDialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                    confirmDialogPane.getStyleClass().add("myConfirmDialog");
+                    String headerText = "Appointment " + appointmentId + " deleted successfully";
+                    successAlert.setHeaderText(headerText);
+                    successAlert.showAndWait();
+                    setAppointmentTableValues();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        }
+        else {
+            Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
+            DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            noCustomerSelectedAlert.setHeaderText("Please select an appointment to delete.");
+            noCustomerSelectedAlert.showAndWait();
+        }
     }
     private Parent scene;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        setCustomerTableValues();
+        upcomingAppointmentAlert();
+    }
+
+    public void upcomingAppointmentAlert() {
+        ObservableList<LocalTime> userAppointmentStartTimes = DBAppointment.getAllUserAppointments(User.getUserId());
+        LocalTime currentTime = LocalTime.now();
+        userAppointmentStartTimes.forEach((time) -> {
+            long timeDifference = ChronoUnit.MINUTES.between(currentTime, time);
+            System.out.println("Time difference: " + timeDifference);
+            if(timeDifference > 0 && timeDifference <=15) {
+                Alert upcomingAppointmentAlert = new Alert(Alert.AlertType.INFORMATION);
+                DialogPane dialogPane = upcomingAppointmentAlert.getDialogPane();
+                dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                upcomingAppointmentAlert.setHeaderText("You have an upcoming appointment in " + timeDifference + " minutes");
+                upcomingAppointmentAlert.showAndWait();
+            }
+        });
+    }
+
+    public void setCustomerTableValues() {
         customerTable.setPlaceholder(new Label("No rows to display"));
         customerTable.setItems(DBCustomers.getAllCustomers());
         customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
@@ -111,17 +176,6 @@ public class CustomerController implements Initializable {
         customerPostalCodeColumn.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
         customerPhoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
         customerDivisionColumn.setCellValueFactory(new PropertyValueFactory<>("division"));
-//        setCustomerTableValues();
-    }
-
-    public void setCustomerTableValues() {
-//        customerTable.setItems(DBCustomers.getAllCustomers());
-//        customerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
-//        customerNameColumn.setCellValueFactory(new PropertyValueFactory<>("customerName"));
-//        customerAddressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
-//        customerPostalCodeColumn.setCellValueFactory(new PropertyValueFactory<>("postalCode"));
-//        customerPhoneColumn.setCellValueFactory(new PropertyValueFactory<>("phone"));
-//        customerDivisionIdColumn.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
     }
 
     public void setAppointmentTableValues() {
@@ -131,10 +185,11 @@ public class CustomerController implements Initializable {
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
-        contactColumn.setCellValueFactory(new PropertyValueFactory<>("contactId"));
+        contactColumn.setCellValueFactory(new PropertyValueFactory<>("contact"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
         startColumn.setCellValueFactory(new PropertyValueFactory<>("start"));
         endColumn.setCellValueFactory(new PropertyValueFactory<>("end"));
+//        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         appointmentCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
         appointmentUserIdColumn.setCellValueFactory(new PropertyValueFactory<>("userId"));
     }
@@ -165,6 +220,30 @@ public class CustomerController implements Initializable {
             dialogPane.getStyleClass().add("myDialog");
             noCustomerSelectedAlert.setHeaderText("Please select a customer to modify.");
             noCustomerSelectedAlert.showAndWait();
+        }
+    }
+
+    public void modifyAppointment(ActionEvent actionEvent) throws IOException {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/ModifyAppointment.fxml"));
+            loader.load();
+            // gets the ModifyAppointmentController so the selected customer can be passed
+            ModifyAppointmentController modifyAppointmentController = loader.getController();
+            modifyAppointmentController.getAppointmentToModify(appointmentTable.getSelectionModel().getSelectedItem());
+            Stage modifyAppointmentStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            modifyAppointmentStage.setTitle("Modify Appointment");
+            modifyAppointmentStage.setScene(new Scene(scene));
+            scene.getStylesheets().add("stylesheet.css");
+            modifyAppointmentStage.show();
+        } catch (NullPointerException e) {
+            Alert noAppointmentSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
+            DialogPane dialogPane = noAppointmentSelectedAlert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            noAppointmentSelectedAlert.setHeaderText("Please select an appointment to modify.");
+            noAppointmentSelectedAlert.showAndWait();
         }
     }
 
@@ -205,6 +284,7 @@ public class CustomerController implements Initializable {
                     confirmDialogPane.getStyleClass().add("myConfirmDialog");
                     successAlert.setHeaderText("Customer deleted successfully");
                     successAlert.showAndWait();
+                    setCustomerTableValues();
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }

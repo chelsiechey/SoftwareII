@@ -17,10 +17,12 @@ import utils.DBContact;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import javafx.fxml.Initializable;
 import utils.DBContact;
@@ -41,26 +43,26 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private DatePicker datePicker;
     @FXML
-    private ComboBox<LocalTime> startTimeComboBox;
+    private ComboBox<String> startTimeComboBox;
     @FXML
-    private ComboBox<LocalTime> endTimeComboBox;
+    private ComboBox<String> endTimeComboBox;
     private Stage stage;
     private Parent scene;
     private int customerId;
+    private final ZoneId localZoneId = ZoneId.systemDefault();
+    private final ZoneId utcZoneId = ZoneId.of("UTC");
+    private final ZoneId estZoneId = ZoneId.of("America/New_York");
+    private final DateTimeFormatter timeDTF = DateTimeFormatter.ofPattern("HH:mm:ss");
+    Locale locale = Locale.getDefault();
     Vector<Integer> contactIds = new Vector<>();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        startTimeComboBox.setItems();
         ObservableList<String> contactNames = FXCollections.observableArrayList();
-
         DBContact.getAllContacts().forEach((contact) -> {
-
             String contactName = contact.getContactName();
             contactNames.add(contactName);
-            System.out.println(contact.getContactId());
             int contactId = contact.getContactId();
             contactIds.addElement(contactId);
-
         });
         contactComboBox.setItems(contactNames);
         System.out.println(contactIds);
@@ -71,42 +73,56 @@ public class AddAppointmentController implements Initializable {
     }
 
     public void populateTimeBoxes() {
-        ObservableList<LocalTime> startTimeList = FXCollections.observableArrayList();
-        for (int i = 8; i <= 21; ++ i) {
-            LocalTime time = LocalTime.of(i,0);
-            startTimeList.add(time);
+        ObservableList<String> startTimeList = FXCollections.observableArrayList();
+        for (int i = 8; i <= 21; ++i) {
+            LocalTime estTime = LocalTime.of(i, 0);
+            LocalDate estDate = LocalDate.now();
+            LocalDateTime estDateTime = LocalDateTime.of(estDate, estTime);
+            ZonedDateTime estZonedDateTime = ZonedDateTime.of(estDateTime, estZoneId);
+            ZonedDateTime localZonedDateTime = ZonedDateTime.ofInstant(estZonedDateTime.toInstant(), localZoneId);
+            startTimeList.add(localZonedDateTime.toLocalTime().format(timeDTF));
         }
-        ObservableList<LocalTime> endTimeList = FXCollections.observableArrayList();
-        for (int i = 9; i <= 22; ++ i) {
-            LocalTime time = LocalTime.of(i,0);
-            endTimeList.add(time);
+        ObservableList<String> endTimeList = FXCollections.observableArrayList();
+        for (int i = 9; i <= 22; ++i) {
+            LocalTime estTime = LocalTime.of(i, 0);
+            LocalDate estDate = LocalDate.now();
+            LocalDateTime estDateTime = LocalDateTime.of(estDate, estTime);
+            ZonedDateTime estZonedDateTime = ZonedDateTime.of(estDateTime, estZoneId);
+            ZonedDateTime localZonedDateTime = ZonedDateTime.ofInstant(estZonedDateTime.toInstant(), localZoneId);
+            endTimeList.add(localZonedDateTime.toLocalTime().format(timeDTF));
         }
-//        String stringTime = "2000-01-01T09:00:00Z";
-//        Instant timestamp = Instant.parse(stringTime);
-//        ZonedDateTime estTime = timestamp.atZone(ZoneId.of("EST"));
-//        System.out.println(estTime);
-
         startTimeComboBox.setItems(startTimeList);
         endTimeComboBox.setItems(endTimeList);
     }
 
-    public void createAppointment(ActionEvent actionEvent) {
+    public void createAppointment(ActionEvent actionEvent) throws ParseException {
         String title = titleTextField.getText();
         String description = descriptionTextField.getText();
         String location = locationTextField.getText();
         int contactId = contactIds.get(contactComboBox.getSelectionModel().getSelectedIndex());
         String type = typeTextField.getText();
         LocalDate appointmentDate = datePicker.getValue();
-        LocalTime startTime = startTimeComboBox.getValue();
-        LocalDateTime appointmentStartDateTime = LocalDateTime.of(appointmentDate, startTime);
-        LocalTime endTime = endTimeComboBox.getValue();
-        LocalDateTime appointmentEndDateTime = LocalDateTime.of(appointmentDate, endTime);
+        LocalTime startTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+        LocalDateTime startDateTime = LocalDateTime.of(appointmentDate, startTime);
+        LocalTime endTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+        LocalDateTime endDateTime = LocalDateTime.of(appointmentDate, endTime);
+        ZonedDateTime startUtc = startDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
+        ZonedDateTime endUtc = endDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
+        Timestamp startTimestamp = Timestamp.valueOf(startUtc.toLocalDateTime());
+        Timestamp endTimestamp = Timestamp.valueOf(endUtc.toLocalDateTime());
+
         try {
             String sql = "INSERT INTO appointments(Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
-                    "VALUES ('" + title + "', '" + description + "', '" + location + "', '" + type + "', '" + appointmentStartDateTime + "', '" + appointmentEndDateTime + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', " + this.customerId + ", " + User.getUserId() + ", " + contactId + ")" ;
+                    "VALUES ('" + title + "', '" + description + "', '" + location + "', '" + type + "', '" + startTimestamp + "', '" + endTimestamp + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', " + this.customerId + ", " + User.getUserId() + ", " + contactId + ")" ;
             PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sql);
             preparedStatement.executeUpdate();
-        } catch (SQLException throwables) {
+            stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+            scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
+            scene.getStylesheets().add("/stylesheet.css");
+            stage.setTitle("Customer View");
+            stage.setScene(new Scene(scene));
+            stage.show();
+        } catch (SQLException | IOException throwables) {
             System.out.println("Reached catch");
             throwables.printStackTrace();
         }

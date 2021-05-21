@@ -9,7 +9,8 @@ public class DBCustomers {
     public static ObservableList<Customer> getAllCustomers() {
         ObservableList<Customer> customerList = FXCollections.observableArrayList();
         try {
-            String sql = "SELECT * from customers";
+//            String sql = "SELECT * from customers";
+            String sql = "SELECT customers.*, first_level_divisions.Division FROM customers, first_level_divisions WHERE customers.Division_ID=first_level_divisions.Division_ID";
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -19,18 +20,9 @@ public class DBCustomers {
                 String postalCode = rs.getString("Postal_Code");
                 String phone = rs.getString("Phone");
                 int divisionId = rs.getInt("Division_ID");
-                try {
-                    String sqlDivision = "SELECT Division from first_level_divisions WHERE Division_ID=" + divisionId;
-                    PreparedStatement psDivision = DBConnection.getConnection().prepareStatement(sqlDivision);
-                    ResultSet rsDivision = psDivision.executeQuery();
-                    while (rsDivision.next()) {
-                        String division = rsDivision.getString("Division");
-                        Customer customer = new Customer(customerId, customerName, address, postalCode, phone, divisionId, division);
-                        customerList.add(customer);
-                    }
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+                String division= rs.getString("Division");
+                Customer customer = new Customer(customerId, customerName, address, postalCode, phone, divisionId, division);
+                customerList.add(customer);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();

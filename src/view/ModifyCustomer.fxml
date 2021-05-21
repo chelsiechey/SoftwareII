@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="652.0" prefWidth="1064.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ModifyCustomerController">
+<AnchorPane prefHeight="652.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ModifyCustomerController">
    <children>
       <HBox alignment="CENTER" prefHeight="78.0" prefWidth="800.0">
          <children>
