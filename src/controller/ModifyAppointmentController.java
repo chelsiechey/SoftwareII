@@ -27,6 +27,8 @@ import java.util.ResourceBundle;
 import java.util.Vector;
 
 public class ModifyAppointmentController implements Initializable {
+    ObservableList<String> sortedStartTimeList = FXCollections.observableArrayList();
+    ObservableList<String> sortedEndTimeList = FXCollections.observableArrayList();
     private final DateTimeFormatter timeDTF = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -94,6 +96,24 @@ public class ModifyAppointmentController implements Initializable {
         startDatePicker.setValue(appointmentStartDate);
         endDatePicker.setValue(appointmentEndDate);
     }
+    public boolean isInBusinessHours() {
+        LocalTime selectedStartTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+        LocalTime selectedEndTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem());
+        LocalDate selectedStartDate = startDatePicker.getValue();
+        LocalDate selectedEndDate = endDatePicker.getValue();
+        LocalTime openTime = LocalTime.parse(sortedStartTimeList.get(0));
+        LocalDateTime selectedStartDateTime = LocalDateTime.of(selectedStartDate, selectedStartTime);
+        LocalDateTime selectedEndDateTime = LocalDateTime.of(selectedEndDate, selectedEndTime);
+        LocalDateTime openDateTime = LocalDateTime.of(selectedStartDate, openTime);
+        LocalDateTime closeDateTime = openDateTime.plusHours(14);
+        if (
+                (selectedStartDateTime.isAfter(openDateTime) || selectedStartDateTime.isEqual(openDateTime)) &&
+                        (selectedEndDateTime.isAfter(openDateTime) || selectedEndDateTime.isEqual(openDateTime)) &&
+                        (selectedStartDateTime.isBefore(closeDateTime) || selectedStartDateTime.isEqual(closeDateTime)) &&
+                        (selectedEndDateTime.isBefore(closeDateTime) || selectedEndDateTime.isEqual(closeDateTime))
+        )  { return true; }
+        return false;
+    }
     public void populateTimeBoxes() {
         ObservableList<String> startTimeList = FXCollections.observableArrayList();
         for (int i = 8; i <= 21; ++i) {
@@ -113,7 +133,9 @@ public class ModifyAppointmentController implements Initializable {
             ZonedDateTime localZonedDateTime = ZonedDateTime.ofInstant(estZonedDateTime.toInstant(), localZoneId);
             endTimeList.add(localZonedDateTime.toLocalTime().format(timeDTF));
         }
-        startTimeComboBox.setItems(startTimeList);
+        sortedStartTimeList = startTimeList.sorted();
+        sortedEndTimeList = endTimeList.sorted();
+        startTimeComboBox.setItems(sortedStartTimeList);
         endTimeComboBox.setItems(endTimeList);
     }
     public void saveAppointment(ActionEvent actionEvent) throws IOException {
@@ -133,6 +155,13 @@ public class ModifyAppointmentController implements Initializable {
         Timestamp startTimestamp = Timestamp.valueOf(startUtc.toLocalDateTime());
         Timestamp endTimestamp = Timestamp.valueOf(endUtc.toLocalDateTime());
         int contactId = contactIds.get(contactComboBox.getSelectionModel().getSelectedIndex());
+        // Find if between open and close
+        LocalTime openTime = LocalTime.parse(sortedStartTimeList.get(0));
+        LocalDateTime openDateTime = LocalDateTime.of(appointmentStartDate, openTime);
+        LocalDateTime closeDateTime = openDateTime.plusHours(14);
+        LocalTime closeTime = closeDateTime.toLocalTime();
+
+        if (isInBusinessHours()) {
         try {
             String sqlToUpdate = "UPDATE appointments SET Title='" + title + "', Description='" + description + "', Location='" + location + "', Start='" + startTimestamp + "', End='" + endTimestamp +  "', Type='" + type + "', User_ID=" + User.getUserId() + ", Contact_ID=" + contactId + ", Last_Update=CURRENT_TIMESTAMP, Last_Updated_By='" + User.getUsername() + "' WHERE Appointment_ID=" + appointmentId;
             PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sqlToUpdate);
@@ -145,6 +174,14 @@ public class ModifyAppointmentController implements Initializable {
             stage.show();
         } catch (SQLException | IOException throwables) {
             throwables.printStackTrace();
+        }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            alert.setHeaderText("Appointment is scheduled outside of business hours. Please schedule an appointment between " + openTime + " and " + closeTime);
+            Optional<ButtonType> result = alert.showAndWait();
         }
     }
     @Override

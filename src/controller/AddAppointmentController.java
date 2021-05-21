@@ -55,6 +55,8 @@ public class AddAppointmentController implements Initializable {
     private final ZoneId utcZoneId = ZoneId.of("UTC");
     private final ZoneId estZoneId = ZoneId.of("America/New_York");
     private final DateTimeFormatter timeDTF = DateTimeFormatter.ofPattern("HH:mm:ss");
+    ObservableList<String> sortedStartTimeList = FXCollections.observableArrayList();
+    ObservableList<String> sortedEndTimeList = FXCollections.observableArrayList();
     Locale locale = Locale.getDefault();
     Vector<Integer> contactIds = new Vector<>();
     @Override
@@ -93,43 +95,78 @@ public class AddAppointmentController implements Initializable {
             ZonedDateTime localZonedDateTime = ZonedDateTime.ofInstant(estZonedDateTime.toInstant(), localZoneId);
             endTimeList.add(localZonedDateTime.toLocalTime().format(timeDTF));
         }
-        startTimeComboBox.setItems(startTimeList);
+        sortedStartTimeList = startTimeList.sorted();
+        sortedEndTimeList = endTimeList.sorted();
+        startTimeComboBox.setItems(sortedStartTimeList);
         endTimeComboBox.setItems(endTimeList);
     }
 
+    public boolean isInBusinessHours() {
+        LocalTime selectedStartTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+        LocalTime selectedEndTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem());
+        LocalDate selectedStartDate = startDatePicker.getValue();
+        LocalDate selectedEndDate = endDatePicker.getValue();
+        LocalTime openTime = LocalTime.parse(sortedStartTimeList.get(0));
+        LocalDateTime selectedStartDateTime = LocalDateTime.of(selectedStartDate, selectedStartTime);
+        LocalDateTime selectedEndDateTime = LocalDateTime.of(selectedEndDate, selectedEndTime);
+        LocalDateTime openDateTime = LocalDateTime.of(selectedStartDate, openTime);
+        LocalDateTime closeDateTime = openDateTime.plusHours(14);
+        if (
+                (selectedStartDateTime.isAfter(openDateTime) || selectedStartDateTime.isEqual(openDateTime)) &&
+                (selectedEndDateTime.isAfter(openDateTime) || selectedEndDateTime.isEqual(openDateTime)) &&
+                (selectedStartDateTime.isBefore(closeDateTime) || selectedStartDateTime.isEqual(closeDateTime)) &&
+                (selectedEndDateTime.isBefore(closeDateTime) || selectedEndDateTime.isEqual(closeDateTime))
+        )  { return true; }
+        return false;
+    }
+
     public void createAppointment(ActionEvent actionEvent) throws ParseException {
-        String title = titleTextField.getText();
-        String description = descriptionTextField.getText();
-        String location = locationTextField.getText();
-        int contactId = contactIds.get(contactComboBox.getSelectionModel().getSelectedIndex());
-        String type = typeTextField.getText();
-        LocalDate appointmentStartDate = startDatePicker.getValue();
-        LocalDate appointmentEndDate = endDatePicker.getValue();
-        LocalTime startTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalDateTime startDateTime = LocalDateTime.of(appointmentStartDate, startTime);
-        LocalTime endTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalDateTime endDateTime = LocalDateTime.of(appointmentEndDate, endTime);
-        ZonedDateTime startUtc = startDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
-        ZonedDateTime endUtc = endDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
-        Timestamp startTimestamp = Timestamp.valueOf(startUtc.toLocalDateTime());
-        Timestamp endTimestamp = Timestamp.valueOf(endUtc.toLocalDateTime());
+            String title = titleTextField.getText();
+            String description = descriptionTextField.getText();
+            String location = locationTextField.getText();
+            int contactId = contactIds.get(contactComboBox.getSelectionModel().getSelectedIndex());
+            String type = typeTextField.getText();
+            LocalDate appointmentStartDate = startDatePicker.getValue();
+            LocalDate appointmentEndDate = endDatePicker.getValue();
+            LocalTime startTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+            LocalDateTime startDateTime = LocalDateTime.of(appointmentStartDate, startTime);
+            LocalTime endTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+            LocalDateTime endDateTime = LocalDateTime.of(appointmentEndDate, endTime);
+            ZonedDateTime startUtc = startDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
+            ZonedDateTime endUtc = endDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
+            Timestamp startTimestamp = Timestamp.valueOf(startUtc.toLocalDateTime());
+            Timestamp endTimestamp = Timestamp.valueOf(endUtc.toLocalDateTime());
 
-        try {
-            String sql = "INSERT INTO appointments(Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
-                    "VALUES ('" + title + "', '" + description + "', '" + location + "', '" + type + "', '" + startTimestamp + "', '" + endTimestamp + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', " + this.customerId + ", " + User.getUserId() + ", " + contactId + ")" ;
-            PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sql);
-            preparedStatement.executeUpdate();
-            stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-            scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
-            scene.getStylesheets().add("/stylesheet.css");
-            stage.setTitle("Customer View");
-            stage.setScene(new Scene(scene));
-            stage.show();
-        } catch (SQLException | IOException throwables) {
-            System.out.println("Reached catch");
-            throwables.printStackTrace();
-        }
+            // Find if between open and close
+            LocalTime openTime = LocalTime.parse(sortedStartTimeList.get(0));
+            LocalDateTime openDateTime = LocalDateTime.of(appointmentStartDate, openTime);
+            LocalDateTime closeDateTime = openDateTime.plusHours(14);
+            LocalTime closeTime = closeDateTime.toLocalTime();
 
+            if (isInBusinessHours()) {
+                try {
+                    String sql = "INSERT INTO appointments(Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
+                        "VALUES ('" + title + "', '" + description + "', '" + location + "', '" + type + "', '" + startTimestamp + "', '" + endTimestamp + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', " + this.customerId + ", " + User.getUserId() + ", " + contactId + ")" ;
+                    PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sql);
+                    preparedStatement.executeUpdate();
+                    stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                    scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
+                    scene.getStylesheets().add("/stylesheet.css");
+                    stage.setTitle("Customer View");
+                    stage.setScene(new Scene(scene));
+                    stage.show();
+                } catch (SQLException | IOException throwables) {
+                    System.out.println("Reached catch");
+                    throwables.printStackTrace();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                alert.setHeaderText("Appointment is scheduled outside of business hours. Please schedule an appointment between " + openTime + " and " + closeTime);
+                Optional<ButtonType> result = alert.showAndWait();
+            }
     }
 
     public void handleCancel(ActionEvent actionEvent) throws IOException {
