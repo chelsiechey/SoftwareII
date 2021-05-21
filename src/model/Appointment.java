@@ -14,7 +14,6 @@ public class Appointment {
     private String description;
     private String location;
     private String type;
-//    private LocalDate date;
     private String start;
     private String end;
 

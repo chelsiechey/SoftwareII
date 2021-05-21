@@ -51,14 +51,20 @@
                     </VBox>
                     <VBox layoutX="178.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
                         <children>
-                            <Label text="Date" />
-                            <DatePicker fx:id="datePicker" />
+                            <Label text="Start Date" />
+                            <DatePicker fx:id="startDatePicker" />
                         </children>
                     </VBox>
                     <VBox layoutX="178.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
                         <children>
                             <Label text="Start Time" />
                             <ComboBox fx:id="startTimeComboBox" prefWidth="150.0" />
+                        </children>
+                    </VBox>
+                    <VBox layoutX="544.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">
+                        <children>
+                            <Label text="End Date" />
+                            <DatePicker fx:id="endDatePicker" />
                         </children>
                     </VBox>
                     <VBox layoutX="710.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0">

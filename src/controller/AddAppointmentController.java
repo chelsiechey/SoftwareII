@@ -41,7 +41,9 @@ public class AddAppointmentController implements Initializable {
     @FXML
     private TextField typeTextField;
     @FXML
-    private DatePicker datePicker;
+    private DatePicker startDatePicker;
+    @FXML
+    private DatePicker endDatePicker;
     @FXML
     private ComboBox<String> startTimeComboBox;
     @FXML
@@ -101,11 +103,12 @@ public class AddAppointmentController implements Initializable {
         String location = locationTextField.getText();
         int contactId = contactIds.get(contactComboBox.getSelectionModel().getSelectedIndex());
         String type = typeTextField.getText();
-        LocalDate appointmentDate = datePicker.getValue();
+        LocalDate appointmentStartDate = startDatePicker.getValue();
+        LocalDate appointmentEndDate = endDatePicker.getValue();
         LocalTime startTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalDateTime startDateTime = LocalDateTime.of(appointmentDate, startTime);
+        LocalDateTime startDateTime = LocalDateTime.of(appointmentStartDate, startTime);
         LocalTime endTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalDateTime endDateTime = LocalDateTime.of(appointmentDate, endTime);
+        LocalDateTime endDateTime = LocalDateTime.of(appointmentEndDate, endTime);
         ZonedDateTime startUtc = startDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
         ZonedDateTime endUtc = endDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
         Timestamp startTimestamp = Timestamp.valueOf(startUtc.toLocalDateTime());

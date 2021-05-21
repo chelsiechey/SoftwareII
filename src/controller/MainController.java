@@ -1,18 +1,23 @@
 package controller;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.fxml.FXML;
+import utils.DBAppointment;
 import utils.DBConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -56,6 +61,7 @@ public class MainController implements Initializable {
             customerViewStage.setTitle("Customer View");
             customerViewStage.setScene(new Scene(scene));
             customerViewStage.show();
+            upcomingAppointmentAlert();
         } else {
             try {
                 ResourceBundle resourceBundle = ResourceBundle.getBundle("languages.login", Locale.getDefault());
@@ -64,6 +70,25 @@ public class MainController implements Initializable {
                 System.out.println("Resource not found.");
             }
         }
+    }
+
+    public void upcomingAppointmentAlert() {
+        ObservableList<Timestamp> userAppointmentStartTimes = DBAppointment.getAllUserAppointments(User.getUserId());
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime alertTimePeriod = currentTime.plusMinutes(15);
+        userAppointmentStartTimes.forEach((time) -> {
+            LocalDateTime appointmentStartTime = time.toLocalDateTime();
+            long timeDifference = ChronoUnit.MINUTES.between(currentTime, appointmentStartTime);
+            System.out.println("Time difference: " + timeDifference);
+            if (currentTime.isBefore(appointmentStartTime) && alertTimePeriod.isAfter(appointmentStartTime)) {
+                Alert upcomingAppointmentAlert = new Alert(Alert.AlertType.INFORMATION);
+                DialogPane dialogPane = upcomingAppointmentAlert.getDialogPane();
+                dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                upcomingAppointmentAlert.setHeaderText("You have an upcoming appointment in approximately " + timeDifference + " minute(s)");
+                upcomingAppointmentAlert.showAndWait();
+            }
+        });
     }
 
     private int getUserId(String username) {

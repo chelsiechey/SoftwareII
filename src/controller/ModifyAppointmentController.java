@@ -49,7 +49,9 @@ public class ModifyAppointmentController implements Initializable {
     @FXML
     private TextField typeTextField;
     @FXML
-    private DatePicker datePicker;
+    private DatePicker startDatePicker;
+    @FXML
+    private DatePicker endDatePicker;
     @FXML
     private ComboBox<String> startTimeComboBox;
     @FXML
@@ -83,12 +85,14 @@ public class ModifyAppointmentController implements Initializable {
         typeTextField.setText(String.valueOf(appointmentToModify.getType()));
         LocalDateTime startDateTime = LocalDateTime.parse(appointmentToModify.getStart().toString(), dateTimeFormat);
         LocalDateTime endDateTime = LocalDateTime.parse(appointmentToModify.getEnd().toString(), dateTimeFormat);
-        LocalDate appointmentDate = startDateTime.toLocalDate();
+        LocalDate appointmentStartDate = startDateTime.toLocalDate();
+        LocalDate appointmentEndDate = endDateTime.toLocalDate();
         String startTime = startDateTime.toLocalTime().format(timeDTF);
         String endTime = endDateTime.toLocalTime().format(timeDTF);
         startTimeComboBox.getSelectionModel().select(startTime);
         endTimeComboBox.getSelectionModel().select(endTime);
-        datePicker.setValue(appointmentDate);
+        startDatePicker.setValue(appointmentStartDate);
+        endDatePicker.setValue(appointmentEndDate);
     }
     public void populateTimeBoxes() {
         ObservableList<String> startTimeList = FXCollections.observableArrayList();
@@ -118,11 +122,12 @@ public class ModifyAppointmentController implements Initializable {
         String description = descriptionTextField.getText();
         String location = locationTextField.getText();
         String type = typeTextField.getText();
-        LocalDate appointmentDate = datePicker.getValue();
+        LocalDate appointmentStartDate = startDatePicker.getValue();
+        LocalDate appointmentEndDate = endDatePicker.getValue();
         LocalTime startTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalDateTime startDateTime = LocalDateTime.of(appointmentDate, startTime);
+        LocalDateTime startDateTime = LocalDateTime.of(appointmentStartDate, startTime);
         LocalTime endTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalDateTime endDateTime = LocalDateTime.of(appointmentDate, endTime);
+        LocalDateTime endDateTime = LocalDateTime.of(appointmentEndDate, endTime);
         ZonedDateTime startUtc = startDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
         ZonedDateTime endUtc = endDateTime.atZone(localZoneId).withZoneSameInstant(utcZoneId);
         Timestamp startTimestamp = Timestamp.valueOf(startUtc.toLocalDateTime());

@@ -1,7 +1,10 @@
 package controller;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -107,7 +110,10 @@ public class CustomerController implements Initializable {
     @FXML
     public void deleteAppointment(ActionEvent actionEvent) throws IOException {
         if (appointmentTable.getSelectionModel().getSelectedItem() != null) {
-            int appointmentId = appointmentTable.getSelectionModel().getSelectedItem().getAppointmentId();
+            Appointment currentAppointment = appointmentTable.getSelectionModel().getSelectedItem();
+            int appointmentId = currentAppointment.getAppointmentId();
+            int customerId = currentAppointment.getCustomerId();
+            String type = currentAppointment.getType();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
@@ -124,10 +130,10 @@ public class CustomerController implements Initializable {
                     DialogPane confirmDialogPane = successAlert.getDialogPane();
                     confirmDialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
                     confirmDialogPane.getStyleClass().add("myConfirmDialog");
-                    String headerText = "Appointment " + appointmentId + " deleted successfully";
+                    String headerText = "Appointment " + appointmentId + " for " + type + " was deleted successfully";
                     successAlert.setHeaderText(headerText);
                     successAlert.showAndWait();
-                    setAppointmentTableValues();
+                    setAppointmentTableValues(customerId);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -147,24 +153,6 @@ public class CustomerController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setCustomerTableValues();
-        upcomingAppointmentAlert();
-    }
-
-    public void upcomingAppointmentAlert() {
-        ObservableList<LocalTime> userAppointmentStartTimes = DBAppointment.getAllUserAppointments(User.getUserId());
-        LocalTime currentTime = LocalTime.now();
-        userAppointmentStartTimes.forEach((time) -> {
-            long timeDifference = ChronoUnit.MINUTES.between(currentTime, time);
-            System.out.println("Time difference: " + timeDifference);
-            if(timeDifference > 0 && timeDifference <=15) {
-                Alert upcomingAppointmentAlert = new Alert(Alert.AlertType.INFORMATION);
-                DialogPane dialogPane = upcomingAppointmentAlert.getDialogPane();
-                dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
-                dialogPane.getStyleClass().add("myDialog");
-                upcomingAppointmentAlert.setHeaderText("You have an upcoming appointment in " + timeDifference + " minutes");
-                upcomingAppointmentAlert.showAndWait();
-            }
-        });
     }
 
     public void setCustomerTableValues() {
@@ -178,8 +166,7 @@ public class CustomerController implements Initializable {
         customerDivisionColumn.setCellValueFactory(new PropertyValueFactory<>("division"));
     }
 
-    public void setAppointmentTableValues() {
-        int customerId = customerTable.getSelectionModel().getSelectedItem().getCustomerId();
+    public void setAppointmentTableValues(int customerId) {
         appointmentTable.setItems(DBAppointment.getAllAppointments(customerId));
         appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentId"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -195,7 +182,8 @@ public class CustomerController implements Initializable {
     }
 
     public void getAppointments(MouseEvent actionEvent) throws IOException {
-        setAppointmentTableValues();
+        int customerId = customerTable.getSelectionModel().getSelectedItem().getCustomerId();
+        setAppointmentTableValues(customerId);
     }
 
 
@@ -285,8 +273,17 @@ public class CustomerController implements Initializable {
                     successAlert.setHeaderText("Customer deleted successfully");
                     successAlert.showAndWait();
                     setCustomerTableValues();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
+                } catch (SQLException throwables ) {
+                    if (isConstraintViolation(throwables)) {
+                        Alert hasAssociatedAppointments = new Alert(Alert.AlertType.INFORMATION);
+                        DialogPane dp = hasAssociatedAppointments.getDialogPane();
+                        dp.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                        dp.getStyleClass().add("myDialog");
+                        hasAssociatedAppointments.setHeaderText("All customer appointments must be deleted before continuing.");
+                        hasAssociatedAppointments.showAndWait();
+                    } else {
+                        throwables.printStackTrace();
+                    }
                 }
             }
         }
@@ -298,6 +295,10 @@ public class CustomerController implements Initializable {
             noCustomerSelectedAlert.setHeaderText("Please select a customer to delete.");
             noCustomerSelectedAlert.showAndWait();
         }
+    }
+
+    public static boolean isConstraintViolation(SQLException e) {
+        return e.getSQLState().startsWith("23");
     }
 }
 

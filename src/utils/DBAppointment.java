@@ -42,8 +42,8 @@ public class DBAppointment {
         }
         return appointmentList;
     }
-    public static ObservableList<LocalTime> getAllUserAppointments(int userId) {
-        ObservableList<LocalTime> appointmentStartTimesList = FXCollections.observableArrayList();
+    public static ObservableList<Timestamp> getAllUserAppointments(int userId) {
+        ObservableList<Timestamp> appointmentStartTimesList = FXCollections.observableArrayList();
         try {
 //            String sql = "SELECT * FROM appointments WHERE Customer_ID=" + customerId;
             String sql = "SELECT * FROM appointments WHERE User_ID=" + userId;
@@ -51,9 +51,8 @@ public class DBAppointment {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Timestamp appointmentStartTimestamp = rs.getTimestamp("Start");
-                LocalTime appointmentStartTime = appointmentStartTimestamp.toLocalDateTime().toLocalTime();
-                appointmentStartTimesList.add(appointmentStartTime);
-                System.out.println(appointmentStartTime);
+//                LocalTime appointmentStartTime = appointmentStartTimestamp.toLocalDateTime().toLocalTime();
+                appointmentStartTimesList.add(appointmentStartTimestamp);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
