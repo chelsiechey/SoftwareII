@@ -12,6 +12,7 @@ import model.Customer;
 import javafx.scene.Parent;
 import model.User;
 import model.Contact;
+import utils.DBAppointment;
 import utils.DBConnection;
 import utils.DBContact;
 import java.io.IOException;
@@ -59,8 +60,18 @@ public class AddAppointmentController implements Initializable {
     ObservableList<String> sortedEndTimeList = FXCollections.observableArrayList();
     Locale locale = Locale.getDefault();
     Vector<Integer> contactIds = new Vector<>();
+    LocalTime selectedStartTime;
+    LocalTime selectedEndTime;
+    LocalDate selectedStartDate;
+    LocalDate selectedEndDate;
+    LocalTime openTime;
+    LocalDateTime selectedStartDateTime;
+    LocalDateTime selectedEndDateTime;
+    LocalDateTime openDateTime;
+    LocalDateTime closeDateTime;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        System.out.println("Add appointment controller - initialize reached.");
         ObservableList<String> contactNames = FXCollections.observableArrayList();
         DBContact.getAllContacts().forEach((contact) -> {
             String contactName = contact.getContactName();
@@ -102,15 +113,15 @@ public class AddAppointmentController implements Initializable {
     }
 
     public boolean isInBusinessHours() {
-        LocalTime selectedStartTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
-        LocalTime selectedEndTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem());
-        LocalDate selectedStartDate = startDatePicker.getValue();
-        LocalDate selectedEndDate = endDatePicker.getValue();
-        LocalTime openTime = LocalTime.parse(sortedStartTimeList.get(0));
-        LocalDateTime selectedStartDateTime = LocalDateTime.of(selectedStartDate, selectedStartTime);
-        LocalDateTime selectedEndDateTime = LocalDateTime.of(selectedEndDate, selectedEndTime);
-        LocalDateTime openDateTime = LocalDateTime.of(selectedStartDate, openTime);
-        LocalDateTime closeDateTime = openDateTime.plusHours(14);
+        selectedStartTime = LocalTime.parse(startTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+        selectedEndTime = LocalTime.parse(endTimeComboBox.getSelectionModel().getSelectedItem(), timeDTF);
+        selectedStartDate = startDatePicker.getValue();
+        selectedEndDate = endDatePicker.getValue();
+        openTime = LocalTime.parse(sortedStartTimeList.get(0));
+        selectedStartDateTime = LocalDateTime.of(selectedStartDate, selectedStartTime);
+        selectedEndDateTime = LocalDateTime.of(selectedEndDate, selectedEndTime);
+        openDateTime = LocalDateTime.of(selectedStartDate, openTime);
+        closeDateTime = openDateTime.plusHours(14);
         if (
                 (selectedStartDateTime.isAfter(openDateTime) || selectedStartDateTime.isEqual(openDateTime)) &&
                 (selectedEndDateTime.isAfter(openDateTime) || selectedEndDateTime.isEqual(openDateTime)) &&
@@ -120,7 +131,49 @@ public class AddAppointmentController implements Initializable {
         return false;
     }
 
-    public void createAppointment(ActionEvent actionEvent) throws ParseException {
+    public boolean doesNotHaveConflict() {
+        ObservableList<Timestamp> userAppointmentStartTimes = DBAppointment.getAllUserAppointmentStartTimes(User.getUserId());
+        ObservableList<Timestamp> userAppointmentEndTimes = DBAppointment.getAllUserAppointmentEndTimes(User.getUserId());
+        ObservableList<LocalDateTime> userAppointmentStartDateTime = FXCollections.observableArrayList();
+        ObservableList<LocalDateTime> userAppointmentEndDateTime = FXCollections.observableArrayList();
+
+        userAppointmentStartTimes.forEach((appointment) -> {
+            LocalDateTime dbAppointment = appointment.toLocalDateTime();
+            userAppointmentStartDateTime.add(dbAppointment);
+        });
+        userAppointmentEndTimes.forEach((appointment) -> {
+            LocalDateTime dbAppointment = appointment.toLocalDateTime();
+            userAppointmentEndDateTime.add(dbAppointment);
+        });
+        for (int i = 0; i < userAppointmentStartDateTime.size(); ++i) {
+            System.out.println("DB appointment start: " + userAppointmentStartDateTime.get(i) + " DB appointment end: " + userAppointmentEndDateTime.get(i));
+            if (
+                // if start time is before an existing appointment start time but the end time is after the existing appointments end time (surrounds)
+                (selectedStartDateTime.isBefore(userAppointmentStartDateTime.get(i)) && selectedEndDateTime.isAfter(userAppointmentEndDateTime.get(i))) ||
+                // if start time is after an exiting appointment start time but the end time is before the existing appointments end time (surrounded)
+                (selectedStartDateTime.isAfter(userAppointmentStartDateTime.get(i)) && selectedEndDateTime.isBefore(userAppointmentEndDateTime.get(i))) ||
+                // if start time is before an existing appointment start time but the end time is between the existing appointments start and end time (overlaps earlier)
+                (selectedStartDateTime.isBefore(userAppointmentStartDateTime.get(i)) && selectedEndDateTime.isAfter(userAppointmentStartDateTime.get(i)) && selectedEndDateTime.isBefore(userAppointmentEndDateTime.get(i))) ||
+                // if start time is between an existing appointments start and end time but the end time is after the existing appointments end time (overlaps after)
+                (selectedStartDateTime.isAfter(userAppointmentStartDateTime.get(i)) && selectedStartDateTime.isBefore(userAppointmentEndDateTime.get(i)) && selectedEndDateTime.isAfter(userAppointmentEndDateTime.get(i))) ||
+                // if start time is equal to an existing appointments start time
+                (selectedStartDateTime.isEqual(userAppointmentStartDateTime.get(i))) ||
+                // if end time is equal to an existing appointments end time
+                (selectedEndDateTime.isEqual(userAppointmentEndDateTime.get(i)))
+            ) {
+                System.out.println("Entered Start: " + selectedStartDateTime + " Entered End: " + selectedEndDateTime + " DB Start: " + userAppointmentStartDateTime.get(i) + " DB End: " + userAppointmentEndDateTime.get(i));
+                return false;
+            }
+        }
+        return true;
+    };
+
+
+
+        // if start time is between an existing appointment start time and end time but the end time is after the existing appointment end time (overlaps later
+
+
+    public void createAppointment(ActionEvent actionEvent) {
             String title = titleTextField.getText();
             String description = descriptionTextField.getText();
             String location = locationTextField.getText();
@@ -143,7 +196,7 @@ public class AddAppointmentController implements Initializable {
             LocalDateTime closeDateTime = openDateTime.plusHours(14);
             LocalTime closeTime = closeDateTime.toLocalTime();
 
-            if (isInBusinessHours()) {
+            if (isInBusinessHours() && doesNotHaveConflict()) {
                 try {
                     String sql = "INSERT INTO appointments(Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
                         "VALUES ('" + title + "', '" + description + "', '" + location + "', '" + type + "', '" + startTimestamp + "', '" + endTimestamp + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', " + this.customerId + ", " + User.getUserId() + ", " + contactId + ")" ;
@@ -159,12 +212,26 @@ public class AddAppointmentController implements Initializable {
                     System.out.println("Reached catch");
                     throwables.printStackTrace();
                 }
-            } else {
+            } else if (!isInBusinessHours() && doesNotHaveConflict()) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 DialogPane dialogPane = alert.getDialogPane();
                 dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
                 dialogPane.getStyleClass().add("myDialog");
                 alert.setHeaderText("Appointment is scheduled outside of business hours. Please schedule an appointment between " + openTime + " and " + closeTime);
+                Optional<ButtonType> result = alert.showAndWait();
+            } else if (isInBusinessHours() && !doesNotHaveConflict()) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                alert.setHeaderText("Appointment conflicts with an existing appointment.");
+                Optional<ButtonType> result = alert.showAndWait();
+            } else if (!isInBusinessHours() && !doesNotHaveConflict()) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                DialogPane dialogPane = alert.getDialogPane();
+                dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                dialogPane.getStyleClass().add("myDialog");
+                alert.setHeaderText("Appointment conflicts with an existing appointment and is scheduled outside of business hours.");
                 Optional<ButtonType> result = alert.showAndWait();
             }
     }

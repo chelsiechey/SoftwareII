@@ -73,7 +73,7 @@ public class MainController implements Initializable {
     }
 
     public void upcomingAppointmentAlert() {
-        ObservableList<Timestamp> userAppointmentStartTimes = DBAppointment.getAllUserAppointments(User.getUserId());
+        ObservableList<Timestamp> userAppointmentStartTimes = DBAppointment.getAllUserAppointmentStartTimes(User.getUserId());
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime alertTimePeriod = currentTime.plusMinutes(15);
         userAppointmentStartTimes.forEach((time) -> {

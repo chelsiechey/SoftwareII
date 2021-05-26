@@ -83,10 +83,15 @@ public class CustomerController implements Initializable {
     void addAppointment(ActionEvent actionEvent) {
         if (customerTable.getSelectionModel().getSelectedItem() != null) {
             try {
+                System.out.println("Add appointment try reached.");
                 FXMLLoader loader = new FXMLLoader();
+                System.out.println("Add appointment try 2 reached.");
                 loader.setLocation(getClass().getResource("/view/AddAppointment.fxml"));
+                System.out.println("Add appointment try 3 reached.");
                 loader.load();
+                System.out.println("Add appointment try 4 reached.");
                 AddAppointmentController addAppointmentController = loader.getController();
+                System.out.println("Add appointment try 5 reached.");
                 addAppointmentController.getSelectedCustomersId(customerTable.getSelectionModel().getSelectedItem());
                 Stage addAppointmentStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
                 scene = loader.getRoot();
@@ -95,6 +100,7 @@ public class CustomerController implements Initializable {
                 scene.getStylesheets().add("stylesheet.css");
                 addAppointmentStage.show();
             } catch (IOException e) {
+                e.printStackTrace();
                 System.out.println("Resource failed to initialize");
             }
         }
