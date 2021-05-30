@@ -83,16 +83,11 @@ public class CustomerController implements Initializable {
     void addAppointment(ActionEvent actionEvent) {
         if (customerTable.getSelectionModel().getSelectedItem() != null) {
             try {
-                System.out.println("Add appointment try reached.");
                 FXMLLoader loader = new FXMLLoader();
-                System.out.println("Add appointment try 2 reached.");
                 loader.setLocation(getClass().getResource("/view/AddAppointment.fxml"));
-                System.out.println("Add appointment try 3 reached.");
                 loader.load();
-                System.out.println("Add appointment try 4 reached.");
-                AddAppointmentController addAppointmentController = loader.getController();
-                System.out.println("Add appointment try 5 reached.");
-                addAppointmentController.getSelectedCustomersId(customerTable.getSelectionModel().getSelectedItem());
+                AppointmentController appointmentController = loader.getController();
+                appointmentController.getSelectedCustomersId(customerTable.getSelectionModel().getSelectedItem());
                 Stage addAppointmentStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
                 scene = loader.getRoot();
                 addAppointmentStage.setTitle("Add Appointment");
@@ -222,9 +217,9 @@ public class CustomerController implements Initializable {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/view/ModifyAppointment.fxml"));
             loader.load();
-            // gets the ModifyAppointmentController so the selected customer can be passed
-            ModifyAppointmentController modifyAppointmentController = loader.getController();
-            modifyAppointmentController.getAppointmentToModify(appointmentTable.getSelectionModel().getSelectedItem());
+            // gets the AppointmentController so the selected customer can be passed
+            AppointmentController appointmentController = loader.getController();
+            appointmentController.getAppointmentToModify(appointmentTable.getSelectionModel().getSelectedItem());
             Stage modifyAppointmentStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
             scene = loader.getRoot();
             modifyAppointmentStage.setTitle("Modify Appointment");
