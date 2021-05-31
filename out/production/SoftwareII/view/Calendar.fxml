@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="652.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CalendarController">
+   <children>
+      <VBox alignment="TOP_CENTER" prefHeight="652.0" prefWidth="1300.0">
+         <children>
+            <Label fx:id="dateRangeLabel" alignment="CENTER" prefHeight="30.0" prefWidth="533.0" text="Date Range" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="30.0" top="30.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="Times New Roman" size="24.0" />
+               </font></Label>
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <RadioButton fx:id="monthRadioButton" mnemonicParsing="false" onAction="#sortByMonth" text="By Month">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets right="5.0" />
+                     </HBox.margin></RadioButton>
+                  <RadioButton fx:id="weekRadioButton" mnemonicParsing="false" onAction="#sortByWeek" text="By Week">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin></RadioButton>
+               </children>
+            </HBox>
+            <TableView fx:id="appointmentTable" layoutY="265.0" prefHeight="200.0" prefWidth="1300.0">
+               <columns>
+                  <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
+                  <TableColumn fx:id="titleColumn" prefWidth="154.0" text="Title" />
+                  <TableColumn fx:id="descriptionColumn" prefWidth="226.0" text="Description" />
+                  <TableColumn fx:id="locationColumn" prefWidth="107.0" text="Location" />
+                  <TableColumn fx:id="contactColumn" prefWidth="143.0" text="Contact" />
+                  <TableColumn fx:id="typeColumn" prefWidth="120.0" text="Type" />
+                  <TableColumn fx:id="startDateColumn" prefWidth="91.0" text="Start Date" />
+                  <TableColumn fx:id="startColumn" prefWidth="71.0" text="Start Time" />
+                  <TableColumn fx:id="endDateColumn" prefWidth="99.0" text="End Date" />
+                  <TableColumn fx:id="endColumn" prefWidth="93.0" text="End Time" />
+                  <TableColumn fx:id="appointmentCustomerIdColumn" prefWidth="90.0" text="Customer ID" />
+               </columns>
+            </TableView>
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#getPreviousDates" text="Prev" />
+                  <Button mnemonicParsing="false" onAction="#getNextDates" text="Next" />
+               </children>
+            </HBox>
+            <Button mnemonicParsing="false" onAction="#goBack" text="Back to Customer Screen" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

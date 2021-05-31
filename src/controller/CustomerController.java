@@ -70,15 +70,12 @@ public class CustomerController implements Initializable {
     private TableColumn<Appointment, String> startColumn;
     @FXML
     private TableColumn<Appointment, String> endColumn;
-//    @FXML
-//    private TableColumn<Appointment, LocalDate> dateColumn;
+    @FXML
+    private TableColumn<Appointment, String> startDateColumn;
+    @FXML
+    private TableColumn<Appointment, String> endDateColumn;
     @FXML
     private TableColumn<Appointment, Integer> appointmentCustomerIdColumn;
-    @FXML
-    private TableColumn<Appointment, Integer> appointmentUserIdColumn;
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");//ISO standard time formaat
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-mm-dd");//ISO standard date format
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     @FXML
     void addAppointment(ActionEvent actionEvent) {
         if (customerTable.getSelectionModel().getSelectedItem() != null) {
@@ -175,11 +172,11 @@ public class CustomerController implements Initializable {
         locationColumn.setCellValueFactory(new PropertyValueFactory<>("location"));
         contactColumn.setCellValueFactory(new PropertyValueFactory<>("contact"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        startColumn.setCellValueFactory(new PropertyValueFactory<>("start"));
-        endColumn.setCellValueFactory(new PropertyValueFactory<>("end"));
-//        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
+        startColumn.setCellValueFactory(new PropertyValueFactory<>("startTime"));
+        endColumn.setCellValueFactory(new PropertyValueFactory<>("endTime"));
+        startDateColumn.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        endDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         appointmentCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
-        appointmentUserIdColumn.setCellValueFactory(new PropertyValueFactory<>("userId"));
     }
 
     public void getAppointments(MouseEvent actionEvent) throws IOException {
@@ -300,6 +297,22 @@ public class CustomerController implements Initializable {
 
     public static boolean isConstraintViolation(SQLException e) {
         return e.getSQLState().startsWith("23");
+    }
+
+    public void viewCalendar(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/Calendar.fxml"));
+            loader.load();
+            Stage addCustomerStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            addCustomerStage.setTitle("Calendar");
+            addCustomerStage.setScene(new Scene(scene));
+            scene.getStylesheets().add("stylesheet.css");
+            addCustomerStage.show();
+        } catch (IOException e) {
+            System.out.println("Resource failed to initialize");
+        }
     }
 }
 

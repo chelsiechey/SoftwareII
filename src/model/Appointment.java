@@ -16,10 +16,14 @@ public class Appointment {
     private String type;
     private String start;
     private String end;
+    private String startTime;
+    private String endTime;
+    private String startDate;
+    private String endDate;
 
     // constructor
     // TO DO
-    public Appointment(int customerId, int userId, int contactId, String contact, int appointmentId, String title, String description, String location, String type, String start, String end) {
+    public Appointment(int customerId, int userId, int contactId, String contact, int appointmentId, String title, String description, String location, String type, String start, String end, String startTime, String endTime, String startDate, String endDate) {
         setCustomerId(customerId);
         setUserId(userId);
         setContactId(contactId);
@@ -31,6 +35,10 @@ public class Appointment {
         setType(type);
         setStart(start);
         setEnd(end);
+        setStartTime(startTime);
+        setEndTime(endTime);
+        setStartDate(startDate);
+        setEndDate(endDate);
     }
 
     // getters
@@ -59,6 +67,10 @@ public class Appointment {
     }
     public String getStart() { return start; }
     public String getEnd() { return end; }
+    public String getStartTime() { return startTime; }
+    public String getEndTime() { return endTime; }
+    public String getStartDate() { return startDate; }
+    public String getEndDate() { return endDate; }
 
     // setters
     private void setUserId(int userId) {
@@ -76,4 +88,8 @@ public class Appointment {
     private void setType(String type) { this.type = type; }
     private void setStart(String start) { this.start = start; }
     private void setEnd(String end) { this.end = end; }
+    private void setStartTime(String startTime) { this.startTime = startTime; }
+    private void setEndTime(String endTime) { this.endTime = endTime; }
+    private void setStartDate(String startDate) { this.startDate = startDate; }
+    private void setEndDate(String endDate) { this.endDate = endDate; }
 }

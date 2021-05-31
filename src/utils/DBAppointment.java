@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 
 public class DBAppointment {
         private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        private static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+        private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         private static ZoneId utcZoneId = ZoneId.of("UTC");
         private static ZoneId localZoneId = ZoneId.systemDefault();
         public static ObservableList<Appointment> getAllAppointments(int customerId) {
@@ -33,8 +35,12 @@ public class DBAppointment {
                 ZonedDateTime endLocalZdt = endUtcLdt.atZone(utcZoneId).withZoneSameInstant(localZoneId);
                 String start = startLocalZdt.format(dateTimeFormat);
                 String end = endLocalZdt.format(dateTimeFormat);
+                String startTime = startLocalZdt.format(timeFormat);
+                String endTime = endLocalZdt.format(timeFormat);
+                String startDate = startLocalZdt.format(dateFormat);
+                String endDate = endLocalZdt.format(dateFormat);
 
-                Appointment appointment = new Appointment(customerId, userId, contactId, contact, appointmentId, title, description, location, type, start, end);
+                Appointment appointment = new Appointment(customerId, userId, contactId, contact, appointmentId, title, description, location, type, start, end, startTime, endTime, startDate, endDate);
                 appointmentList.add(appointment);
             }
         } catch (SQLException throwables) {
@@ -75,13 +81,14 @@ public class DBAppointment {
         return appointmentEndTimesList;
     }
 
-    public static ObservableList<Appointment> getAllAppointmentsByUser(int userId) {
+    public static ObservableList<Appointment> getAllAppointments() {
         ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
         try {
-            String sql = "SELECT appointments.*, contacts.Contact_Name FROM appointments, contacts WHERE appointments.Contact_ID=contacts.Contact_ID AND User_ID=" + userId;
+            String sql = "SELECT appointments.*, contacts.Contact_Name FROM appointments, contacts WHERE appointments.Contact_ID=contacts.Contact_ID";
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                int userId = rs.getInt("User_ID");
                 int customerId = rs.getInt("Customer_ID");
                 int contactId = rs.getInt("Contact_ID");
                 int appointmentId = rs.getInt("Appointment_ID");
@@ -98,8 +105,12 @@ public class DBAppointment {
                 ZonedDateTime endLocalZdt = endUtcLdt.atZone(utcZoneId).withZoneSameInstant(localZoneId);
                 String start = startLocalZdt.format(dateTimeFormat);
                 String end = endLocalZdt.format(dateTimeFormat);
+                String startTime = startLocalZdt.format(timeFormat);
+                String endTime = endLocalZdt.format(timeFormat);
+                String startDate = startLocalZdt.format(dateFormat);
+                String endDate = endLocalZdt.format(dateFormat);
 
-                Appointment appointment = new Appointment(customerId, userId, contactId, contact, appointmentId, title, description, location, type, start, end);
+                Appointment appointment = new Appointment(customerId, userId, contactId, contact, appointmentId, title, description, location, type, start, end, startTime, endTime, startDate, endDate);
                 appointmentList.add(appointment);
             }
         } catch (SQLException throwables) {
