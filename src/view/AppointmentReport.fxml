@@ -18,26 +18,27 @@
                   <Insets top="30.0" />
                </VBox.margin>
             </Label>
-            <HBox alignment="CENTER" prefHeight="466.0" prefWidth="1300.0">
+            <HBox alignment="CENTER">
                <children>
-                  <TableView fx:id="appointmentTypeTable" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="422.0">
+                  <TableView fx:id="appointmentTypeTable" prefHeight="400.0" prefWidth="400.0">
                     <columns>
-                      <TableColumn fx:id="appointmentTypeColumn" prefWidth="214.0" text="Type" />
-                        <TableColumn fx:id="numTypeColumn" prefWidth="214.0" text="# of Type" />
+                      <TableColumn fx:id="appointmentTypeColumn" prefWidth="200.0" text="Type" />
+                      <TableColumn fx:id="countTypeColumn" prefWidth="200.0" text="Number of Appointments" />
                     </columns>
                      <HBox.margin>
                         <Insets right="20.0" />
                      </HBox.margin>
                   </TableView>
-                  <TableView fx:id="appointmentMonthTable" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="214.0">
+                  <TableView fx:id="appointmentMonthTable" layoutX="428.0" layoutY="10.0" prefHeight="400.0" prefWidth="400.0">
                      <columns>
-                        <TableColumn fx:id="appointmentMonthColumn" prefWidth="214.0" text="# of Appointments by Month" />
+                        <TableColumn fx:id="appointmentMonthColumn" prefWidth="200.0" text="Month" />
+                        <TableColumn fx:id="countMonthColumn" prefWidth="200.0" text="Number of Appointments" />
                      </columns>
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
                   </TableView>
                </children>
+               <padding>
+                  <Insets bottom="30.0" top="30.0" />
+               </padding>
             </HBox>
             <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
                <VBox.margin>

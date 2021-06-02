@@ -34,13 +34,15 @@ public class AppointmentReportController implements Initializable {
     @FXML
     private TableView<Report> appointmentTypeTable;
     @FXML
-    private TableColumn<ObservableList<Report>, String> appointmentTypeColumn;
+    private TableColumn<Report, String> appointmentTypeColumn;
     @FXML
-    private TableColumn<ObservableList<Report>, String> numTypeColumn;
+    private TableColumn<Report, String> countTypeColumn;
     @FXML
-    private TableView<Appointment> appointmentMonthTable;
+    private TableView<Report> appointmentMonthTable;
     @FXML
-    private TableColumn<Appointment, String> appointmentMonthColumn;
+    private TableColumn<Report, String> appointmentMonthColumn;
+    @FXML
+    private TableColumn<Report, String> countMonthColumn;
 
     // stage and scene
     private Stage stage;
@@ -60,6 +62,9 @@ public class AppointmentReportController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         appointmentTypeTable.setItems(DBAppointment.getUniqueAppointmentTypesAndCount());
         appointmentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        numTypeColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
+        countTypeColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
+        appointmentMonthTable.setItems(DBAppointment.getUniqueAppointmentMonthsAndCount());
+        appointmentMonthColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        countMonthColumn.setCellValueFactory(new PropertyValueFactory<>("count"));
     }
 }

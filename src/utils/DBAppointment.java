@@ -5,6 +5,8 @@ import javafx.collections.*;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DBAppointment {
         private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -15,7 +17,6 @@ public class DBAppointment {
         public static ObservableList<Appointment> getAllAppointments(int customerId) {
         ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
         try {
-//            String sql = "SELECT * FROM appointments WHERE Customer_ID=" + customerId;
             String sql = "SELECT appointments.*, contacts.Contact_Name FROM appointments, contacts WHERE appointments.Contact_ID=contacts.Contact_ID AND Customer_ID=" + customerId;
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -52,13 +53,11 @@ public class DBAppointment {
     public static ObservableList<Timestamp> getAllUserAppointmentStartTimes(int userId) {
         ObservableList<Timestamp> appointmentStartTimesList = FXCollections.observableArrayList();
         try {
-//            String sql = "SELECT * FROM appointments WHERE Customer_ID=" + customerId;
             String sql = "SELECT * FROM appointments WHERE User_ID=" + userId;
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Timestamp appointmentStartTimestamp = rs.getTimestamp("Start");
-//                LocalTime appointmentStartTime = appointmentStartTimestamp.toLocalDateTime().toLocalTime();
                 appointmentStartTimesList.add(appointmentStartTimestamp);
             }
         } catch (SQLException throwables) {
@@ -80,20 +79,6 @@ public class DBAppointment {
             throwables.printStackTrace();
         }
         return appointmentEndTimesList;
-    }
-
-    public static String getAppointmentTypesAndCount(String appointmentType) {
-        try {
-            String sql = "SELECT COUNT(Type) AS NumberOfType FROM appointments WHERE Type='" + appointmentType + "'";
-            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                return String.valueOf(rs.getInt("NumberOfType"));
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return null;
     }
 
     public static ObservableList<Report> getUniqueAppointmentTypesAndCount() {
@@ -159,5 +144,29 @@ public class DBAppointment {
             throwables.printStackTrace();
         }
         return appointmentList;
+    }
+
+
+    public static ObservableList<Report> getUniqueAppointmentMonthsAndCount() {
+        ObservableList<Report> appointmentMonthsAndCount = FXCollections.observableArrayList();
+        HashMap<YearMonth, Integer> monthMap = new HashMap<YearMonth, Integer>();
+        getAllAppointments().forEach((appointment) -> {
+            String start = appointment.getStart().substring(0, 7);
+            System.out.println(start);
+            YearMonth startAsYearMonth = YearMonth.parse(start);
+            if (monthMap.get(startAsYearMonth) == null) {
+                monthMap.put(startAsYearMonth, 1);
+            } else {
+                monthMap.merge(startAsYearMonth, 1, (a, b) -> a + b);
+            }
+        });
+        System.out.println(monthMap);
+        monthMap.forEach((month, count) -> {
+            String monthToString = String.valueOf(month);
+            String countToString = String.valueOf(count);
+            Report report = new Report(monthToString, countToString);
+            appointmentMonthsAndCount.add(report);
+        });
+        return appointmentMonthsAndCount;
     }
 }
