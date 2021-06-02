@@ -1,56 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="652.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
+<AnchorPane prefHeight="652.0" prefWidth="1330.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CustomerController">
    <children>
-      <TableView fx:id="customerTable" onMouseClicked="#getAppointments" prefHeight="200.0" prefWidth="607.0">
-        <columns>
-          <TableColumn fx:id="customerIdColumn" prefWidth="85.0" text="Customer ID" />
-          <TableColumn fx:id="customerNameColumn" prefWidth="105.0" text="Customer Name" />
-            <TableColumn fx:id="customerAddressColumn" prefWidth="105.0" text="Address" />
-            <TableColumn fx:id="customerPostalCodeColumn" prefWidth="105.0" text="Postal Code" />
-            <TableColumn fx:id="customerPhoneColumn" prefWidth="105.0" text="Phone" />
-            <TableColumn fx:id="customerDivisionColumn" prefWidth="105.0" text="State/Province" />
-        </columns>
-      </TableView>
-      <HBox layoutY="219.0" prefHeight="26.0" prefWidth="607.0">
+      <VBox alignment="TOP_CENTER" prefHeight="652.0" prefWidth="1330.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#addCustomer" text="Add" />
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#modifyCustomer" text="Modify" />
-            <Button layoutX="50.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete" />
+            <Label text="Customers">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="20.0" />
+               </VBox.margin>
+            </Label>
+            <TableView fx:id="customerTable" maxWidth="610.0" onMouseClicked="#getAppointments" prefHeight="200.0" prefWidth="605.0">
+              <columns>
+                <TableColumn fx:id="customerIdColumn" prefWidth="85.0" text="Customer ID" />
+                <TableColumn fx:id="customerNameColumn" prefWidth="105.0" text="Customer Name" />
+                  <TableColumn fx:id="customerAddressColumn" prefWidth="105.0" text="Address" />
+                  <TableColumn fx:id="customerPostalCodeColumn" prefWidth="105.0" text="Postal Code" />
+                  <TableColumn fx:id="customerPhoneColumn" prefWidth="105.0" text="Phone" />
+                  <TableColumn fx:id="customerDivisionColumn" prefWidth="105.0" text="State/Province" />
+              </columns>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </TableView>
+            <HBox alignment="TOP_CENTER" prefHeight="26.0" prefWidth="483.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#addCustomer" text="Add" />
+                  <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#modifyCustomer" text="Modify" />
+                  <Button layoutX="50.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteCustomer" text="Delete" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </HBox>
+            <Label text="Appointments">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <TableView fx:id="appointmentTable" maxWidth="1300.0" prefHeight="200.0" prefWidth="1295.0">
+               <columns>
+                   <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
+                   <TableColumn fx:id="titleColumn" prefWidth="154.0" text="Title" />
+                   <TableColumn fx:id="descriptionColumn" prefWidth="226.0" text="Description" />
+                   <TableColumn fx:id="locationColumn" prefWidth="107.0" text="Location" />
+                   <TableColumn fx:id="contactColumn" prefWidth="143.0" text="Contact" />
+                   <TableColumn fx:id="typeColumn" prefWidth="120.0" text="Type" />
+                  <TableColumn fx:id="startDateColumn" prefWidth="91.0" text="Start Date" />
+                   <TableColumn fx:id="startColumn" prefWidth="71.0" text="Start Time" />
+                  <TableColumn fx:id="endDateColumn" prefWidth="99.0" text="End Date" />
+                   <TableColumn fx:id="endColumn" prefWidth="93.0" text="End Time" />
+                   <TableColumn fx:id="appointmentCustomerIdColumn" prefWidth="90.0" text="Customer ID" />
+               </columns>
+            </TableView>
+            <HBox alignment="TOP_CENTER" prefHeight="26.0" prefWidth="607.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#addAppointment" text="Add" />
+                  <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#modifyAppointment" text="Modify" />
+                  <Button layoutX="50.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteAppointment" text="Delete" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="TOP_CENTER" prefHeight="26.0" prefWidth="607.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#viewCalendar" text="View Calendar" />
+                  <Button mnemonicParsing="false" onAction="#viewCustomerAppointmentReport" text="Appointment Report" />
+                  <Button mnemonicParsing="false" onAction="#viewContactSchedules" text="Contact Schedules" />
+                  <Button layoutX="233.0" layoutY="10.0" mnemonicParsing="false" onAction="#viewUserLogInReport" text="User Log-In Attempts" />
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
          </children>
-      </HBox>
-      <TableView fx:id="appointmentTable" layoutY="265.0" prefHeight="200.0" prefWidth="1300.0">
-         <columns>
-             <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
-             <TableColumn fx:id="titleColumn" prefWidth="154.0" text="Title" />
-             <TableColumn fx:id="descriptionColumn" prefWidth="226.0" text="Description" />
-             <TableColumn fx:id="locationColumn" prefWidth="107.0" text="Location" />
-             <TableColumn fx:id="contactColumn" prefWidth="143.0" text="Contact" />
-             <TableColumn fx:id="typeColumn" prefWidth="120.0" text="Type" />
-            <TableColumn fx:id="startDateColumn" prefWidth="91.0" text="Start Date" />
-             <TableColumn fx:id="startColumn" prefWidth="71.0" text="Start Time" />
-            <TableColumn fx:id="endDateColumn" prefWidth="99.0" text="End Date" />
-             <TableColumn fx:id="endColumn" prefWidth="93.0" text="End Time" />
-             <TableColumn fx:id="appointmentCustomerIdColumn" prefWidth="90.0" text="Customer ID" />
-         </columns>
-      </TableView>
-      <HBox layoutY="490.0" prefHeight="26.0" prefWidth="607.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#addAppointment" text="Add" />
-            <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#modifyAppointment" text="Modify" />
-            <Button layoutX="50.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteAppointment" text="Delete" />
-         </children>
-      </HBox>
-      <HBox layoutY="529.0" prefHeight="26.0" prefWidth="607.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#viewCalendar" text="View Calendar" />
-         </children>
-      </HBox>
+      </VBox>
    </children>
 </AnchorPane>

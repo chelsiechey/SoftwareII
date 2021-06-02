@@ -1,5 +1,6 @@
 package utils;
 import model.Appointment;
+import model.Report;
 import javafx.collections.*;
 import java.sql.*;
 import java.time.*;
@@ -79,6 +80,47 @@ public class DBAppointment {
             throwables.printStackTrace();
         }
         return appointmentEndTimesList;
+    }
+
+    public static String getAppointmentTypesAndCount(String appointmentType) {
+        try {
+            String sql = "SELECT COUNT(Type) AS NumberOfType FROM appointments WHERE Type='" + appointmentType + "'";
+            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                return String.valueOf(rs.getInt("NumberOfType"));
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ObservableList<Report> getUniqueAppointmentTypesAndCount() {
+        ObservableList<Report> appointmentTypesAndCount = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT DISTINCT Type FROM appointments";
+            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String type = rs.getString("Type");
+                try {
+                    String sqlCount = "SELECT COUNT(Type) AS NumberOfType FROM appointments WHERE Type='" + type + "'";
+                    PreparedStatement psCount = DBConnection.getConnection().prepareStatement(sqlCount);
+                    ResultSet rsCount = psCount.executeQuery();
+                    while (rsCount.next()) {
+                        String count = String.valueOf(rsCount.getInt("NumberOfType"));
+                        Report report = new Report(type, count);
+                        appointmentTypesAndCount.add(report);
+                    }
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return appointmentTypesAndCount;
     }
 
     public static ObservableList<Appointment> getAllAppointments() {

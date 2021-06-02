@@ -314,6 +314,54 @@ public class CustomerController implements Initializable {
             System.out.println("Resource failed to initialize");
         }
     }
+
+    public void viewCustomerAppointmentReport(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/AppointmentReport.fxml"));
+            loader.load();
+            Stage addCustomerStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            addCustomerStage.setTitle("Appointment Report");
+            addCustomerStage.setScene(new Scene(scene));
+            scene.getStylesheets().add("stylesheet.css");
+            addCustomerStage.show();
+        } catch (IOException e) {
+            System.out.println("Resource failed to initialize");
+        }
+    }
+
+    public void viewContactSchedules(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/ContactSchedules.fxml"));
+            loader.load();
+            Stage addCustomerStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            addCustomerStage.setTitle("Contact Schedules");
+            addCustomerStage.setScene(new Scene(scene));
+            scene.getStylesheets().add("stylesheet.css");
+            addCustomerStage.show();
+        } catch (IOException e) {
+            System.out.println("Resource failed to initialize");
+        }
+    }
+
+    public void viewUserLogInReport(ActionEvent actionEvent) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/view/UserLogInAttempts.fxml"));
+            loader.load();
+            Stage addCustomerStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+            scene = loader.getRoot();
+            addCustomerStage.setTitle("User Log-In Attempts");
+            addCustomerStage.setScene(new Scene(scene));
+            scene.getStylesheets().add("stylesheet.css");
+            addCustomerStage.show();
+        } catch (IOException e) {
+            System.out.println("Resource failed to initialize");
+        }
+    }
 }
 
 

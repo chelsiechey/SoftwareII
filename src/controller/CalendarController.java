@@ -184,9 +184,9 @@ public class CalendarController implements Initializable {
         filteredAppointments.setPredicate(row -> {
             LocalDate appointmentDate = LocalDate.parse(row.getStart(), dateTimeFormat);
             return (appointmentDate.isAfter(sunday) && appointmentDate.isBefore(saturday)) ||
-                    (appointmentDate.isEqual(sunday) && appointmentDate.isBefore(saturday)) ||
-                    (appointmentDate.isAfter(sunday) && appointmentDate.isEqual(saturday)) ||
-                    (appointmentDate.isEqual(sunday) && appointmentDate.isEqual(saturday));
+                   (appointmentDate.isEqual(sunday) && appointmentDate.isBefore(saturday)) ||
+                   (appointmentDate.isAfter(sunday) && appointmentDate.isEqual(saturday)) ||
+                   (appointmentDate.isEqual(sunday) && appointmentDate.isEqual(saturday));
         });
         setAppointmentTable(filteredAppointments);
     }
