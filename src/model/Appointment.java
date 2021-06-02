@@ -41,6 +41,21 @@ public class Appointment {
         setEndDate(endDate);
     }
 
+    public Appointment(int customerId, int contactId, int appointmentId, String title, String description, String type, String start, String end, String startTime, String endTime, String startDate, String endDate) {
+        setCustomerId(customerId);
+        setContactId(contactId);
+        setAppointmentId(appointmentId);
+        setTitle(title);
+        setDescription(description);
+        setType(type);
+        setStart(start);
+        setEnd(end);
+        setStartTime(startTime);
+        setEndTime(endTime);
+        setStartDate(startDate);
+        setEndDate(endDate);
+    }
+
     // getters
     public int getUserId() { return userId; }
     public int getContactId() {

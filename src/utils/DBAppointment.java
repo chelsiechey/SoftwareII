@@ -169,4 +169,38 @@ public class DBAppointment {
         });
         return appointmentMonthsAndCount;
     }
+
+    public static ObservableList<Appointment> getAllAppointmentsForContact(int contactId) {
+        ObservableList<Appointment> appointmentList = FXCollections.observableArrayList();
+        try {
+            String sql = "SELECT * FROM appointments WHERE Contact_ID=" + contactId;
+            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int customerId = rs.getInt("Customer_ID");
+                int appointmentId = rs.getInt("Appointment_ID");
+                String title = rs.getString("Title");
+                String description = rs.getString("Description");
+                String type = rs.getString("Type");
+                String startUtc = rs.getString("Start").substring(0,19);
+                String endUtc = rs.getString("End").substring(0,19);
+                LocalDateTime startUtcLdt = LocalDateTime.parse(startUtc, dateTimeFormat);
+                LocalDateTime endUtcLdt = LocalDateTime.parse(endUtc, dateTimeFormat);
+                ZonedDateTime startLocalZdt = startUtcLdt.atZone(utcZoneId).withZoneSameInstant(localZoneId);
+                ZonedDateTime endLocalZdt = endUtcLdt.atZone(utcZoneId).withZoneSameInstant(localZoneId);
+                String start = startLocalZdt.format(dateTimeFormat);
+                String end = endLocalZdt.format(dateTimeFormat);
+                String startTime = startLocalZdt.format(timeFormat);
+                String endTime = endLocalZdt.format(timeFormat);
+                String startDate = startLocalZdt.format(dateFormat);
+                String endDate = endLocalZdt.format(dateFormat);
+
+                Appointment appointment = new Appointment(customerId, contactId, appointmentId, title, description, type, start, end, startTime, endTime, startDate, endDate);
+                appointmentList.add(appointment);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return appointmentList;
+    }
 }

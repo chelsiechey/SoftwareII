@@ -169,6 +169,7 @@ public class CalendarController implements Initializable {
 
     public void filterByMonth() {
         FilteredList<Appointment> filteredAppointments = new FilteredList<>(DBAppointment.getAllAppointments());
+        // lambda expression
         filteredAppointments.setPredicate(row -> {
             LocalDate appointmentDate = LocalDate.parse(row.getStart(), dateTimeFormat);
             return (appointmentDate.isAfter(firstOfMonth) && appointmentDate.isBefore(lastOfMonth)) ||

@@ -76,6 +76,7 @@ public class MainController implements Initializable {
         ObservableList<Timestamp> userAppointmentStartTimes = DBAppointment.getAllUserAppointmentStartTimes(User.getUserId());
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime alertTimePeriod = currentTime.plusMinutes(15);
+        // lambda expression
         userAppointmentStartTimes.forEach((time) -> {
             LocalDateTime appointmentStartTime = time.toLocalDateTime();
             long timeDifference = ChronoUnit.MINUTES.between(currentTime, appointmentStartTime);
