@@ -54,15 +54,15 @@ public class CalendarController implements Initializable {
     private TableColumn<Appointment, Integer> appointmentCustomerIdColumn;
 
     // determines if sorting by month or week
-    private boolean sortByMonth;
+    boolean sortByMonth;
 
     // date and month variables
-    private final LocalDate currentDate = LocalDate.now();
-    private LocalDate firstOfMonth;
-    private LocalDate lastOfMonth;
-    private YearMonth month;
-    private LocalDate sunday;
-    private LocalDate saturday;
+    LocalDate currentDate = LocalDate.now();
+    LocalDate firstOfMonth;
+    LocalDate lastOfMonth;
+    YearMonth month;
+    LocalDate sunday;
+    LocalDate saturday;
 
     // formats
     private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -214,6 +214,7 @@ public class CalendarController implements Initializable {
                    (appointmentDate.isAfter(sunday) && appointmentDate.isEqual(saturday)) ||
                    (appointmentDate.isEqual(sunday) && appointmentDate.isEqual(saturday));
         });
+        System.out.println("Appointments: " + filteredAppointments);
         setAppointmentTable(filteredAppointments);
     }
 

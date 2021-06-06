@@ -11,11 +11,11 @@ import java.util.HashMap;
  * This class is used to get appointment information from the database
  */
 public class DBAppointment {
-    private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
-    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final ZoneId utcZoneId = ZoneId.of("UTC");
-    private static final ZoneId localZoneId = ZoneId.systemDefault();
+    private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static ZoneId utcZoneId = ZoneId.of("UTC");
+    private static ZoneId localZoneId = ZoneId.systemDefault();
 
     /**
      * This method gets all appointments from the DB with the matching customer ID

@@ -221,7 +221,9 @@ public class AppointmentController implements Initializable {
             if (contact.equals("")) {
                 return false;
             }
+            System.out.println("Contact name is not empty");
             contactId = contactIds.get(contactComboBox.getSelectionModel().getSelectedIndex());
+            System.out.println("Contact ID assigned");
             type = typeTextField.getText();
             if (type.equals("")) { return false; }
             LocalDate appointmentStartDate = startDatePicker.getValue();
@@ -256,6 +258,7 @@ public class AppointmentController implements Initializable {
             if (isInBusinessHours() && doesNotHaveConflict()) {
                 // Attempts to insert appointment into database
                 try {
+                    System.out.println("User ID: " + User.getUserId());
                     String sql = "INSERT INTO appointments(Title, Description, Location, Type, Start, End, Create_Date, Created_By, Last_Update, Last_Updated_By, Customer_ID, User_ID, Contact_ID) " +
                             "VALUES ('" + title + "', '" + description + "', '" + location + "', '" + type + "', '" + startTimestamp + "', '" + endTimestamp + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', CURRENT_TIMESTAMP, '" + User.getUsername() + "', " + this.customerId + ", " + User.getUserId() + ", " + contactId + ")";
                     PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sql);

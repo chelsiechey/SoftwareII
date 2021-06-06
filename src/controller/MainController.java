@@ -64,6 +64,7 @@ public class MainController implements Initializable {
         String passwordInput = PasswordFieldLogin.getText();
         int userId = getUserId(usernameInput);
         if (correctPassword(userId, passwordInput)) {
+            User user = new User(userId, usernameInput, passwordInput);
             successLog();
             Stage customerViewStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
             Parent scene = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/Customer.fxml")));

@@ -63,8 +63,10 @@ public class ModifyCustomerController implements Initializable {
         addressTextField.setText(customerToModify.getAddress());
         postalCodeTextField.setText(String.valueOf(customerToModify.getPostalCode()));
         phoneTextField.setText(String.valueOf(customerToModify.getPhone()));
-        countryComboBox.getSelectionModel().select(String.valueOf(customerToModify.getCountry()));
+        String country = customerToModify.getCountry();
+        countryComboBox.getSelectionModel().select(String.valueOf(country));
         stateComboBox.getSelectionModel().select(String.valueOf(customerToModify.getState()));
+        initializeStates(country);
     }
 
     /**
@@ -80,7 +82,6 @@ public class ModifyCustomerController implements Initializable {
                 String country = rs.getString("Country");
                 countryOptionsList.add(country);
                 countryComboBox.setItems(countryOptionsList);
-                initializeStates(country);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
