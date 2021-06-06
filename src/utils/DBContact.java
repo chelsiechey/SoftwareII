@@ -1,12 +1,16 @@
 package utils;
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
-import utils.DBConnection;
-import model.Appointment;
 import model.Contact;
 import javafx.collections.*;
 import java.sql.*;
 
+/**
+ * This class is used to get contact information from the database
+ */
 public class DBContact {
+    /**
+     * This method gets all contacts from the DB
+     * @return Returns an observable list of contacts
+     */
     public static ObservableList<Contact> getAllContacts() {
         ObservableList<Contact> contactList = FXCollections.observableArrayList();
         try {
@@ -24,20 +28,5 @@ public class DBContact {
             throwables.printStackTrace();
         }
         return contactList;
-    }
-    public static ObservableList<String> getAllContactNames() {
-        ObservableList<String> contactNameList = FXCollections.observableArrayList();
-        try {
-            String sql = "SELECT * FROM contacts";
-            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String contactName = rs.getString("Contact_Name");
-                contactNameList.add(contactName);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return contactNameList;
     }
 }

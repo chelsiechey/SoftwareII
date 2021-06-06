@@ -1,19 +1,16 @@
 package model;
-import utils.DBConnection;
+import utils.DBDivision;
 
-import java.sql.*;
-
+/**
+ * Represents a customer
+ * @author Chelsie Conrad
+ */
 public class Customer {
     private int customerId;
     private String customerName;
     private String address;
-    private String formattedAddress;
     private String postalCode;
     private String phone;
-    private Timestamp createDate;
-    private String createdBy;
-    private Timestamp lastUpdate;
-    private String lastUpdatedBy;
     private int divisionId;
     private String country;
     private String division;
@@ -35,102 +32,118 @@ public class Customer {
         setDivision(division);
     }
 
-//    public Customer(int customerId, String customerName) {
-//        setCustomerId(customerId);
-//        setCustomerName(customerName);
-//    }
-//    public Customer(int customerId, String customerName, String address, String postalCode, String phone, Timestamp lastUpdate, String lastUpdatedBy) {
-//        setCustomerId(customerId);
-//        setCustomerName(customerName);
-//        setAddress(address);
-//        setPostalCode(postalCode);
-//        setPhone(phone);
-//        setLastUpdate(lastUpdate);
-//        setLastUpdatedBy(lastUpdatedBy);
-//    }
     // getters
+    /**
+     * Gets the customer ID
+     * @return Returns the customer's ID
+     */
     public int getCustomerId() {
         return customerId;
     }
+
+    /**
+     * Gets the customer name
+     * @return Returns the customer's name
+     */
     public String getCustomerName() {
         return customerName;
     }
-    public String getAddress() {
-        return address;
-    }
-    public String getPostalCode() {
-        return postalCode;
-    }
-    public String getPhone() {
-        return phone;
-    }
-    public int getDivisionId() {
-        return divisionId;
-    }
-    public String getCountry() {
-        return country;
-    }
-    public String getState() {
-        return state;
-    }
-    public String getDivision() {return division; }
-    // setters
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
-    }
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
-    public void setAddress(String address) {
-        this.address = address;
-    }
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-    public void setDivision(String division) {this.division = division; }
-//    public void setLastUpdate(Timestamp lastUpdate) {
-//        this.lastUpdate = lastUpdate;
-//    }
-//    public void setLastUpdatedBy(String lastUpdatedBy) {
-//        this.lastUpdatedBy = lastUpdatedBy;
-//    }
-    public void setDivisionId(int divisionId) {
-        this.divisionId = divisionId;
-    }
 
-    public void setCountry(int divisionId) {
-        try {
-            String sql = "SELECT COUNTRY_ID FROM first_level_divisions WHERE Division_ID=" + divisionId;
-            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                if (rs.getInt("COUNTRY_ID") == 1) {
-                    this.country = "U.S";
-                }
-                else if (rs.getInt("COUNTRY_ID") == 2) {
-                    this.country = "UK";
-                }
-                else if (rs.getInt("COUNTRY_ID") == 3) {
-                    this.country = "Canada";
-                }
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
-    public void setState(int divisionId) {
-        try {
-            String sql = "SELECT Division FROM first_level_divisions WHERE Division_ID=" + divisionId;
-            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                this.state = rs.getString("Division");
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-    }
+    /**
+     * Gets the customer address
+     * @return Returns the customer's address
+     */
+    public String getAddress() { return address; }
+
+    /**
+     * Gets the customer postal code
+     * @return Returns the customer's postal code
+     */
+    public String getPostalCode() { return postalCode; }
+
+    /**
+     * Gets the customer phone
+     * @return Returns the customer's phone number
+     */
+    public String getPhone() { return phone; }
+
+    /**
+     * Gets the customer division ID
+     * @return Returns the customer's division ID
+     */
+    public int getDivisionId() { return divisionId; }
+
+    /**
+     * Gets the customer country
+     * @return Returns the customer's country
+     */
+    public String getCountry() { return country; }
+
+    /**
+     * Gets the customer state/province
+     * @return Returns the customer's state/province
+     */
+    public String getState() { return state; }
+
+    /**
+     * Gets the customer division
+     * @return Returns the customer's division
+     */
+    public String getDivision() {return division; }
+
+    // setters
+
+    /**
+     * Sets the customer ID
+     * @param customerId The value set to the customer's ID
+     */
+    public void setCustomerId(int customerId) { this.customerId = customerId; }
+
+    /**
+     * Sets the customer name
+     * @param customerName The value set to the customer's name
+     */
+    public void setCustomerName(String customerName) { this.customerName = customerName; }
+
+    /**
+     * Sets the customer address
+     * @param address The value set to the customer's address
+     */
+    public void setAddress(String address) { this.address = address; }
+
+    /**
+     * Sets the customer phone
+     * @param phone The value set to the customer's phone number
+     */
+    public void setPhone(String phone) { this.phone = phone; }
+
+    /**
+     * Sets the customer postal code
+     * @param postalCode The value set to the customer's postal code
+     */
+    public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
+
+    /**
+     * Sets the customer division
+     * @param division The value set to the customer's division
+     */
+    public void setDivision(String division) {this.division = division; }
+
+    /**
+     * Sets the customer division ID
+     * @param divisionId The value set to the customer's division ID
+     */
+    public void setDivisionId(int divisionId) { this.divisionId = divisionId; }
+
+    /**
+     * Sets the customer country based on their division ID
+     * @param divisionId The customer's division ID
+     */
+    public void setCountry(int divisionId) { this.country = DBDivision.getCountryOfDivisionId(divisionId); }
+
+    /**
+     * Sets the customer state based on their division ID
+     * @param divisionId The customer's division ID
+     */
+    public void setState(int divisionId) { this.state = DBDivision.getStateOfDivisionId(divisionId); }
 }

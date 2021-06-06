@@ -1,20 +1,11 @@
 package controller;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.net.URL;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
@@ -24,17 +15,13 @@ import javafx.scene.control.*;
 import model.Customer;
 import model.Appointment;
 import javafx.scene.control.cell.PropertyValueFactory;
-import model.User;
 import utils.DBAppointment;
 import utils.DBConnection;
 import utils.DBCustomers;
-import utils.DBCustomerDivision;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import java.io.IOException;
 import javafx.scene.Parent;
-import java.sql.Timestamp;
-
 
 
 public class CustomerController implements Initializable {
@@ -99,14 +86,14 @@ public class CustomerController implements Initializable {
         else {
             Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
             DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             noCustomerSelectedAlert.setHeaderText("Please select a customer to schedule an appointment.");
             noCustomerSelectedAlert.showAndWait();
         }
     }
     @FXML
-    public void deleteAppointment(ActionEvent actionEvent) throws IOException {
+    public void deleteAppointment(ActionEvent actionEvent)  {
         if (appointmentTable.getSelectionModel().getSelectedItem() != null) {
             Appointment currentAppointment = appointmentTable.getSelectionModel().getSelectedItem();
             int appointmentId = currentAppointment.getAppointmentId();
@@ -114,7 +101,7 @@ public class CustomerController implements Initializable {
             String type = currentAppointment.getType();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             alert.setHeaderText("Delete appointment?");
             Optional<ButtonType> result = alert.showAndWait();
@@ -126,7 +113,7 @@ public class CustomerController implements Initializable {
                     setCustomerTableValues();
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     DialogPane confirmDialogPane = successAlert.getDialogPane();
-                    confirmDialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                    confirmDialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
                     confirmDialogPane.getStyleClass().add("myConfirmDialog");
                     String headerText = "Appointment " + appointmentId + " for " + type + " was deleted successfully";
                     successAlert.setHeaderText(headerText);
@@ -140,7 +127,7 @@ public class CustomerController implements Initializable {
         else {
             Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
             DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             noCustomerSelectedAlert.setHeaderText("Please select an appointment to delete.");
             noCustomerSelectedAlert.showAndWait();
@@ -179,7 +166,7 @@ public class CustomerController implements Initializable {
         appointmentCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
     }
 
-    public void getAppointments(MouseEvent actionEvent) throws IOException {
+    public void getAppointments(MouseEvent actionEvent) {
         int customerId = customerTable.getSelectionModel().getSelectedItem().getCustomerId();
         setAppointmentTableValues(customerId);
     }
@@ -202,7 +189,7 @@ public class CustomerController implements Initializable {
         } catch (NullPointerException e) {
             Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
             DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             noCustomerSelectedAlert.setHeaderText("Please select a customer to modify.");
             noCustomerSelectedAlert.showAndWait();
@@ -226,7 +213,7 @@ public class CustomerController implements Initializable {
         } catch (NullPointerException e) {
             Alert noAppointmentSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
             DialogPane dialogPane = noAppointmentSelectedAlert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             noAppointmentSelectedAlert.setHeaderText("Please select an appointment to modify.");
             noAppointmentSelectedAlert.showAndWait();
@@ -249,12 +236,12 @@ public class CustomerController implements Initializable {
         }
     }
 
-    public void deleteCustomer(ActionEvent actionEvent) throws IOException {
+    public void deleteCustomer(ActionEvent actionEvent) {
         if (customerTable.getSelectionModel().getSelectedItem() != null) {
             int customerId = customerTable.getSelectionModel().getSelectedItem().getCustomerId();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             alert.setHeaderText("Delete customer?");
             Optional<ButtonType> result = alert.showAndWait();
@@ -266,7 +253,7 @@ public class CustomerController implements Initializable {
                     setCustomerTableValues();
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     DialogPane confirmDialogPane = successAlert.getDialogPane();
-                    confirmDialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                    confirmDialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
                     confirmDialogPane.getStyleClass().add("myConfirmDialog");
                     successAlert.setHeaderText("Customer deleted successfully");
                     successAlert.showAndWait();
@@ -275,7 +262,7 @@ public class CustomerController implements Initializable {
                     if (isConstraintViolation(throwables)) {
                         Alert hasAssociatedAppointments = new Alert(Alert.AlertType.INFORMATION);
                         DialogPane dp = hasAssociatedAppointments.getDialogPane();
-                        dp.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+                        dp.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
                         dp.getStyleClass().add("myDialog");
                         hasAssociatedAppointments.setHeaderText("All customer appointments must be deleted before continuing.");
                         hasAssociatedAppointments.showAndWait();
@@ -288,7 +275,7 @@ public class CustomerController implements Initializable {
         else {
             Alert noCustomerSelectedAlert = new Alert(Alert.AlertType.INFORMATION);
             DialogPane dialogPane = noCustomerSelectedAlert.getDialogPane();
-            dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
             dialogPane.getStyleClass().add("myDialog");
             noCustomerSelectedAlert.setHeaderText("Please select a customer to delete.");
             noCustomerSelectedAlert.showAndWait();
@@ -347,14 +334,14 @@ public class CustomerController implements Initializable {
         }
     }
 
-    public void viewUserLogInReport(ActionEvent actionEvent) {
+    public void viewAppointmentsPerLocation(ActionEvent actionEvent) {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/view/UserLogInAttempts.fxml"));
+            loader.setLocation(getClass().getResource("/view/AppointmentsPerLocation.fxml"));
             loader.load();
             Stage addCustomerStage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
             scene = loader.getRoot();
-            addCustomerStage.setTitle("User Log-In Attempts");
+            addCustomerStage.setTitle("Appointments Per Location");
             addCustomerStage.setScene(new Scene(scene));
             scene.getStylesheets().add("stylesheet.css");
             addCustomerStage.show();

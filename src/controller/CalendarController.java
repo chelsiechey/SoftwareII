@@ -11,15 +11,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import model.Appointment;
 import utils.DBAppointment;
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.logging.Filter;
 
+/**
+ * This class creates the controller for viewing appointments by month and week
+ */
 public class CalendarController implements Initializable {
     @FXML
     private Label dateRangeLabel;
@@ -52,35 +53,33 @@ public class CalendarController implements Initializable {
     @FXML
     private TableColumn<Appointment, Integer> appointmentCustomerIdColumn;
 
-    private ToggleGroup monthOrWeekToggleGroup;
-
-    // stage and scene
-    private Stage stage;
-    private Parent scene;
-
     // determines if sorting by month or week
-    boolean sortByMonth;
+    private boolean sortByMonth;
 
     // date and month variables
-//    Month displayMonth;
-//    int displayYear;
-    LocalDate currentDate = LocalDate.now();
-//    Month currentMonth = currentDate.getMonth();
-//    int currentYear = currentDate.getYear();
-    LocalDate firstOfMonth;
-    LocalDate lastOfMonth;
-    YearMonth month;
-    LocalDate sunday;
-    LocalDate saturday;
+    private final LocalDate currentDate = LocalDate.now();
+    private LocalDate firstOfMonth;
+    private LocalDate lastOfMonth;
+    private YearMonth month;
+    private LocalDate sunday;
+    private LocalDate saturday;
 
     // formats
-    private static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * This method initializes the calendar controller
+     * by setting the default display to by month,
+     * creating a toggle group for the month and week toggle buttons,
+     * and by setting the appointments in the table
+     * @param url Unused parameter for a URL
+     * @param resourceBundle Unused parameter for a resource bundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         sortByMonth = true;
         setOriginalDisplayMonth();
-        monthOrWeekToggleGroup = new ToggleGroup();
+        ToggleGroup monthOrWeekToggleGroup = new ToggleGroup();
         monthRadioButton.setToggleGroup(monthOrWeekToggleGroup);
         weekRadioButton.setToggleGroup(monthOrWeekToggleGroup);
         monthRadioButton.setSelected(true);
@@ -88,16 +87,19 @@ public class CalendarController implements Initializable {
         filterByMonth();
     }
 
+    /**
+     * This method gets the first and last day of the current month and sets the date range label
+     */
     public void setOriginalDisplayMonth() {
-//        displayMonth = currentMonth;
-//        displayYear = currentYear;
-//        dateRangeLabel.setText(displayMonth.toString() + " " + displayYear);
         month = YearMonth.now();
         firstOfMonth = month.atDay(1);
         lastOfMonth = month.atEndOfMonth();
         dateRangeLabel.setText(month.toString());
     }
 
+    /**
+     * This method gets the Sunday and Saturday of the current week and sets the date range label
+     */
     public void setOriginalDisplayWeek() {
         // Go backward to get Sunday
         sunday = currentDate;
@@ -112,13 +114,19 @@ public class CalendarController implements Initializable {
         {
             saturday = saturday.plusDays(1);
         }
-        dateRangeLabel.setText(sunday.toString() + " - " + saturday.toString());
+        dateRangeLabel.setText(sunday + " - " + saturday);
     }
-    
+
+    /**
+     * This method redirects the user to the customer page
+     * @param actionEvent The ActionEvent object generated when the button 'Back to Customer Screen' is pressed
+     * @throws IOException Throws an exception if the fxml file for the Customer page is not found
+     */
     @FXML
     void goBack(ActionEvent actionEvent) throws IOException {
-        stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-        scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
+        // stage and scene
+        Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+        Parent scene = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/Customer.fxml")));
         scene.getStylesheets().add("/stylesheet.css");
         stage.setTitle("Customer View");
         stage.setScene(new Scene(scene));
@@ -126,6 +134,12 @@ public class CalendarController implements Initializable {
     }
 
 
+    /**
+     * This method gets the week or month before the week or month currently being displayed
+     * and sets the appointments in the table to the new values
+     * and updates the date range listed on the date range label
+     * @param actionEvent The ActionEvent object generated when the Prev button is pressed
+     */
     public void getPreviousDates(ActionEvent actionEvent) {
         if (sortByMonth) {
             month = month.minusMonths(1);
@@ -133,19 +147,20 @@ public class CalendarController implements Initializable {
             lastOfMonth = month.atEndOfMonth();
             dateRangeLabel.setText(month.toString());
             filterByMonth();
-//            if (displayMonth == Month.JANUARY) {
-//                displayYear = displayYear - 1;
-//            }
-//            displayMonth = displayMonth.minus(1);
-//            dateRangeLabel.setText(displayMonth.toString() + " " + displayYear);
         } else {
             sunday = sunday.minusDays(7);
             saturday = saturday.minusDays(7);
-            dateRangeLabel.setText(sunday.toString() + " - " + saturday.toString());
+            dateRangeLabel.setText(sunday + " - " + saturday);
             filterByWeek();
         }
     }
 
+    /**
+     * This method gets the week or month following the week or month currently being displayed
+     * and sets the appointments in the table to the new values
+     * and updates the date range listed on the date range label
+     * @param actionEvent The ActionEvent object generated when the Next button is pressed
+     */
     public void getNextDates(ActionEvent actionEvent) {
         if (sortByMonth) {
             month = month.plusMonths(1);
@@ -156,17 +171,24 @@ public class CalendarController implements Initializable {
         } else {
            sunday = sunday.plusDays(7);
            saturday = saturday.plusDays(7);
-           dateRangeLabel.setText(sunday.toString() + " - " + saturday.toString());
+           dateRangeLabel.setText(sunday + " - " + saturday);
            filterByWeek();
         }
     }
 
+    /**
+     * This method sets the appointments in the calendar to be displayed by month
+     * @param actionEvent The ActionEvent object generated when the By Month radio button is selected
+     */
     public void sortByMonth(ActionEvent actionEvent) {
         sortByMonth = true;
         setOriginalDisplayMonth();
         filterByMonth();
     }
 
+    /**
+     * This method uses a lambda expression to filter the appointment list to only those in the displayed month
+     */
     public void filterByMonth() {
         FilteredList<Appointment> filteredAppointments = new FilteredList<>(DBAppointment.getAllAppointments());
         // lambda expression
@@ -180,6 +202,9 @@ public class CalendarController implements Initializable {
         setAppointmentTable(filteredAppointments);
     }
 
+    /**
+     * This method filters the appointment list to only those in the displayed week
+     */
     public void filterByWeek() {
         FilteredList<Appointment> filteredAppointments = new FilteredList<>(DBAppointment.getAllAppointments());
         filteredAppointments.setPredicate(row -> {
@@ -192,6 +217,10 @@ public class CalendarController implements Initializable {
         setAppointmentTable(filteredAppointments);
     }
 
+    /**
+     * This method sets the appointments in the table to the filtered list
+     * @param filteredAppointments The appointments within the displayed week or month
+     */
     public void setAppointmentTable(FilteredList<Appointment> filteredAppointments) {
         appointmentTable.setItems(filteredAppointments);
         appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentId"));
@@ -207,6 +236,10 @@ public class CalendarController implements Initializable {
         appointmentCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
     }
 
+    /**
+     * This method sets the appointments in the calendar to be displayed by week
+     * @param actionEvent The ActionEvent object generated when the By Week radio button is selected
+     */
     public void sortByWeek(ActionEvent actionEvent) {
         sortByMonth = false;
         setOriginalDisplayWeek();

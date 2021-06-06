@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="652.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="controller.AppointmentsPerLocationController">
+   <children>
+      <VBox alignment="CENTER" prefHeight="652.0" prefWidth="1444.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="39.0" prefWidth="219.0" text="Appointments Per Location">
+               <VBox.margin>
+                  <Insets bottom="50.0" />
+               </VBox.margin>
+            </Label>
+            <TableView fx:id="appointmentsPerLocationTable" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="500.0">
+              <columns>
+                <TableColumn fx:id="locationColumn" prefWidth="250.0" text="Location" />
+                <TableColumn fx:id="numAppointmentsColumn" prefWidth="250.0" text="Number of Appointments" />
+              </columns>
+            </TableView>
+            <Button mnemonicParsing="false" onAction="#goBack" text="Go Back">
+               <VBox.margin>
+                  <Insets top="50.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

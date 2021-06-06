@@ -5,14 +5,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import utils.DBConnection;
 import java.time.ZoneId;
+import java.util.Objects;
 
 /** This class creates an App for scheduling appointments */
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("view/Main.fxml"));
-        primaryStage.setTitle("Hello World");
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("view/Main.fxml")));
+        primaryStage.setTitle("Log In");
         Scene scene = new Scene(root);
         scene.getStylesheets().add("stylesheet.css");
         primaryStage.setScene(scene);

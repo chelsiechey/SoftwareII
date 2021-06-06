@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -11,21 +12,20 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.event.ActionEvent;
 import javafx.stage.Stage;
-import model.Contact;
 import model.Appointment;
-import javafx.fxml.Initializable;
+import model.Contact;
 import utils.DBAppointment;
 import utils.DBContact;
-
-
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * This class creates the controller for viewing the schedule of each contact in the organization
+ */
 public class ContactSchedulesController implements Initializable {
-
     @FXML
     private TableView<Contact> contactTable;
     @FXML
@@ -55,16 +55,20 @@ public class ContactSchedulesController implements Initializable {
     @FXML
     private TableColumn<Appointment, Integer> appointmentCustomerIdColumn;
 
-    // stage and scene
-    private Stage stage;
-    private Parent scene;
-
+    /**
+     * This method gets the ID of the selected contact
+     * @param mouseEvent The MouseEvent object generated when a contact is selected
+     */
     @FXML
-    void getAppointments(MouseEvent event) {
+    void getAppointments(MouseEvent mouseEvent) {
         int contactId = contactTable.getSelectionModel().getSelectedItem().getContactId();
         setAppointmentTableValues(contactId);
     }
 
+    /**
+     * This method populates the appointment table with the selected contact's schedule
+     * @param contactId The ID of the selected contact
+     */
     public void setAppointmentTableValues(int contactId) {
         appointmentTable.setItems(DBAppointment.getAllAppointmentsForContact(contactId));
         appointmentIdColumn.setCellValueFactory(new PropertyValueFactory<>("appointmentId"));
@@ -78,21 +82,36 @@ public class ContactSchedulesController implements Initializable {
         appointmentCustomerIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
     }
 
+    /**
+     * This method redirects the user to the customer page
+     * @param actionEvent The ActionEvent object generated when the button 'Go Back' is pressed
+     * @throws IOException Throws an exception if the fxml file for the Customer page is not found
+     */
     @FXML
     void goBack(ActionEvent actionEvent) throws IOException {
-        stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-        scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
+        // stage and scene
+        Stage stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+        Parent scene = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/Customer.fxml")));
         scene.getStylesheets().add("/stylesheet.css");
         stage.setTitle("Customer View");
         stage.setScene(new Scene(scene));
         stage.show();
     }
 
+    /**
+     * This method initializes the contact schedule controller by populating the contact table
+     * with all of the contacts in the database
+     * @param url Unused parameter for a URL
+     * @param resourceBundle Unused parameter for a resource bundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setContactTableValues();
     }
 
+    /**
+     * This method populates the contact table with all of the contacts in the database
+     */
     public void setContactTableValues() {
         contactTable.setPlaceholder(new Label("No rows to display"));
         contactTable.setItems(DBContact.getAllContacts());

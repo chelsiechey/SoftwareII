@@ -1,15 +1,19 @@
 package utils;
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
-import utils.DBConnection;
 import model.Customer;
 import javafx.collections.*;
 import java.sql.*;
 
+/**
+ * This class is used to get customer information from the database
+ */
 public class DBCustomers {
+    /**
+     * This method gets all customers and the their first level division from the DB
+     * @return Returns an observable list of customers
+     */
     public static ObservableList<Customer> getAllCustomers() {
         ObservableList<Customer> customerList = FXCollections.observableArrayList();
         try {
-//            String sql = "SELECT * from customers";
             String sql = "SELECT customers.*, first_level_divisions.Division FROM customers, first_level_divisions WHERE customers.Division_ID=first_level_divisions.Division_ID";
             PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
             ResultSet rs = ps.executeQuery();

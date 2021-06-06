@@ -1,6 +1,9 @@
 package utils;
 import java.sql.*;
 
+/**
+ * This class creates a connection to the database
+ */
 public class DBConnection {
     // JDBC URL parts
     private static final String protocol = "jdbc";
@@ -19,7 +22,10 @@ public class DBConnection {
     private static final String username = "U07cKg";
     private static final String password = "53688989591";
 
-    // Establishes a connection to the database
+    /**
+     * This method establishes a connection to the database or catches an exception
+     * @return Returns the connection to the database
+     */
     public static Connection establishConnection() {
         try {
             Class.forName(driver);
@@ -31,11 +37,17 @@ public class DBConnection {
         return conn;
     }
 
-    // Gets previously established connection to the database
+    /**
+     * This method gets the previously established connection to the database
+     * @return Returns the connection to the database
+     */
     public static Connection getConnection() {
         return conn;
     }
 
+    /**
+     * This method closes the connection to the database or catches an exception
+     */
     public static void closeConnection() {
         try {
             conn.close();

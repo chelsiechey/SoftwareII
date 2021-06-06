@@ -3,6 +3,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import model.Customer;
 import utils.DBConnection;
+
+import java.util.Objects;
 import java.util.Optional;
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -40,20 +42,35 @@ public class ModifyCustomerController implements Initializable {
     @FXML
     private TextField phoneTextField;
 
-    ObservableList<String> countryOptionsList = FXCollections.observableArrayList();
-    ObservableList<String> stateOptionsList = FXCollections.observableArrayList();
+    // customer table variables
+    private String customerName;
+    private String address;
+    private String postalCode;
+    private String phone;
+    private String state;
 
+    // observable lists for state/province and country combo boxes
+    private final ObservableList<String> countryOptionsList = FXCollections.observableArrayList();
+    private final ObservableList<String> stateOptionsList = FXCollections.observableArrayList();
 
-
+    /**
+     * This method populates the customer data in the fields
+     * @param customerToModify The Customer the user selected to modify
+     */
     public void getCustomerToModify(Customer customerToModify) {
         customerIdTextField.setText(String.valueOf(customerToModify.getCustomerId()));
         customerNameTextField.setText(customerToModify.getCustomerName());
-        addressTextField.setText(String.format(customerToModify.getAddress()));
+        addressTextField.setText(customerToModify.getAddress());
         postalCodeTextField.setText(String.valueOf(customerToModify.getPostalCode()));
         phoneTextField.setText(String.valueOf(customerToModify.getPhone()));
         countryComboBox.getSelectionModel().select(String.valueOf(customerToModify.getCountry()));
         stateComboBox.getSelectionModel().select(String.valueOf(customerToModify.getState()));
     }
+
+    /**
+     * This method gets all of the countries stored in the database
+     * and populates the country combo box with the results
+     */
     public void countryOptions() {
         try {
             String sql = "SELECT country FROM countries";
@@ -69,11 +86,23 @@ public class ModifyCustomerController implements Initializable {
             throwables.printStackTrace();
         }
     }
+
+    /**
+     * This method initializes the controller for modifying customers
+     * by populating the country options combo box with countries
+     * @param url Unused parameter for a URL
+     * @param resourceBundle Unused parameter for a resource bundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         countryOptions();
     }
 
+    /**
+     * This method finds the states/provinces in the selected country
+     * and populates the state combo box
+     * @param country The country selected by the user or the initial country of the customer
+     */
     public void initializeStates(String country) {
         if (country.equals("U.S")) {
             try {
@@ -117,23 +146,32 @@ public class ModifyCustomerController implements Initializable {
         }
     }
 
-    public void filterByCountry(ActionEvent actionEvent) throws SQLException {
+    /**
+     * This method sets the state combo box based on the country selected
+     * @param actionEvent The ActionEvent object generated when a country is selected in the country combo box
+     */
+    public void filterByCountry(ActionEvent actionEvent) {
         stateOptionsList.clear();
-        System.out.println(countryComboBox.getValue());
         String country = countryComboBox.getValue();
         initializeStates(country);
     }
 
+    /**
+     * This method confirms if the user would actually like to cancel modifying a customer
+     * and redirects them to the customer page if yes or stays on the modify customer page if no
+     * @param actionEvent The ActionEvent object generated when the cancel button is pressed.
+     * @throws IOException Throws an exception if the fxml file for the Customer page is not found
+     */
     public void handleCancel(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/stylesheet.css").toExternalForm());
+        dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
         dialogPane.getStyleClass().add("myDialog");
         alert.setHeaderText("Discard all changes?");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-            scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
+            scene = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/Customer.fxml")));
             scene.getStylesheets().add("/stylesheet.css");
             stage.setTitle("Customer View");
             stage.setScene(new Scene(scene));
@@ -141,37 +179,59 @@ public class ModifyCustomerController implements Initializable {
         }
     }
 
+    /**
+     * This method checks that the user entered data in each field
+     * @return Returns true if all of the fields have values in them or false if any are missing
+     */
+    public boolean valuesInitialized() {
+        return !customerName.equals("") && !address.equals("") && !postalCode.equals("") && !phone.equals("") && !state.equals("");
+    }
+
+    /**
+     * This method first checks that all customer fields are present and then attempts to update the
+     * customer in the database and return the user to the Customer page
+     * @param actionEvent The ActionEvent object generated when the save button is pressed
+     */
     public void saveCustomer(ActionEvent actionEvent) {
         int customerId = Integer.parseInt(customerIdTextField.getText());
-        String customerName = customerNameTextField.getText();
-        String address = addressTextField.getText();
-        String postalCode = postalCodeTextField.getText();
-        String phone = phoneTextField.getText();
-        String state = stateComboBox.getValue();
+        customerName = customerNameTextField.getText();
+        address = addressTextField.getText();
+        postalCode = postalCodeTextField.getText();
+        phone = phoneTextField.getText();
+        state = stateComboBox.getValue();
         String username = User.getUsername();
-        try {
-            String sql = "SELECT Division_ID FROM first_level_divisions WHERE Division='" + state + "'";
-            PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                try {
-                    int divisionId = (rs.getInt("Division_ID"));
-                    String sqlToUpdate = "UPDATE customers SET Customer_Name='" + customerName + "', Address='" + address + "', Postal_Code='" + postalCode + "', Phone='" + phone + "', Division_ID=" + divisionId + ", Last_Update=CURRENT_TIMESTAMP, Last_Updated_By='" + username + "' WHERE Customer_ID=" + customerId;
-                    PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sqlToUpdate);
-                    preparedStatement.executeUpdate();
-                } catch (SQLException throwables) {
-                    System.out.println("Reached catch");
-                    throwables.printStackTrace();
+        if (valuesInitialized()) {
+            try {
+                String sql = "SELECT Division_ID FROM first_level_divisions WHERE Division='" + state + "'";
+                PreparedStatement ps = DBConnection.getConnection().prepareStatement(sql);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    try {
+                        int divisionId = (rs.getInt("Division_ID"));
+                        String sqlToUpdate = "UPDATE customers SET Customer_Name='" + customerName + "', Address='" + address + "', Postal_Code='" + postalCode + "', Phone='" + phone + "', Division_ID=" + divisionId + ", Last_Update=CURRENT_TIMESTAMP, Last_Updated_By='" + username + "' WHERE Customer_ID=" + customerId;
+                        PreparedStatement preparedStatement = DBConnection.getConnection().prepareStatement(sqlToUpdate);
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException throwables) {
+                        System.out.println("Reached catch");
+                        throwables.printStackTrace();
+                    }
                 }
+                stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
+                scene = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/view/Customer.fxml")));
+                scene.getStylesheets().add("/stylesheet.css");
+                stage.setTitle("Customer View");
+                stage.setScene(new Scene(scene));
+                stage.show();
+            } catch (SQLException | IOException throwables) {
+                throwables.printStackTrace();
             }
-            stage = (Stage) ((Button) actionEvent.getSource()).getScene().getWindow();
-            scene = FXMLLoader.load(getClass().getResource("/view/Customer.fxml"));
-            scene.getStylesheets().add("/stylesheet.css");
-            stage.setTitle("Customer View");
-            stage.setScene(new Scene(scene));
-            stage.show();
-        } catch (SQLException | IOException throwables) {
-            throwables.printStackTrace();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/stylesheet.css")).toExternalForm());
+            dialogPane.getStyleClass().add("myDialog");
+            alert.setHeaderText("Please fill in all fields with the appropriate data type.");
+            alert.showAndWait();
         }
     }
 }
